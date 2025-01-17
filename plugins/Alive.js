@@ -20,9 +20,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     text: 'Riruru Initializing', // Text content in case a message body is needed
     contextInfo: {
       mentionedJid: [m.sender],
-      externalAdReply: {
-  
-      },
+   
     },
   };
 
