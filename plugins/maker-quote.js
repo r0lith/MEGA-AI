@@ -38,8 +38,8 @@ let handler = async (m, { conn, text }) => {
       type: 'quote',
       format: 'png',
       backgroundColor: '#FFFFFF',
-      width: 1800,
-      height: 200, // Adjust the height value as desired
+      width: 500,
+      height: 500, // Adjust the height value as desired
       scale: 2,
       messages: [
         {
@@ -105,7 +105,7 @@ let handler = async (m, { conn, text }) => {
     // Clean up temporary file
     fs.unlinkSync(tempImagePath)
 
-    m.react('🤡')
+    m.react('🎉')
   } catch (e) {
     console.error(e)
     m.react('😭')

@@ -2,15 +2,20 @@ import { cpus as _cpus, totalmem, freemem } from 'os'
 import util from 'util'
 import { performance } from 'perf_hooks'
 import { sizeFormatter } from 'human-readable'
+
 let format = sizeFormatter({
   std: 'JEDEC', // 'SI' (default) | 'IEC' | 'JEDEC'
   decimalPlaces: 2,
   keepTrailingZeroes: false,
-  render: (literal, symbol) => `${literal} ${symbol}B`,
+  render: (literal, symbol) => `${literal} ${symbol}B,`
 })
-let handler = async (m, { conn, usedPrefix, command }) => {
+
+let handler = async (m, { conn, usedPrefix, command, isOwner }) => {
+  // Check if the command is executed by the owner
+  if (!isOwner) throw `✳️ This command can only be run by the owner.`
+
   const chats = Object.entries(conn.chats).filter(([id, data]) => id && data.isChats)
-  const groupsIn = chats.filter(([id]) => id.endsWith('@g.us')) //groups.filter(v => !v.read_only)
+  const groupsIn = chats.filter(([id]) => id.endsWith('@g.us'))
   const used = process.memoryUsage()
   const cpus = _cpus().map(cpu => {
     cpu.total = Object.keys(cpu.times).reduce((last, type) => last + cpu.times[type], 0)
@@ -39,32 +44,33 @@ let handler = async (m, { conn, usedPrefix, command }) => {
       },
     }
   )
-  let old = performance.now()
 
+  let old = performance.now()
   let neww = performance.now()
   let speed = neww - old
   let who = m.quoted
     ? m.quoted.sender
     : m.mentionedJid && m.mentionedJid[0]
-      ? m.mentionedJid[0]
-      : m.fromMe
-        ? conn.user.jid
-        : m.sender
+    ? m.mentionedJid[0]
+    : m.fromMe
+    ? conn.user.jid
+    : m.sender
+
   if (!(who in global.db.data.users)) throw `The user is not found in my database`
-  let pp = await conn.profilePictureUrl(who, 'image').catch(_ => './assets/A.jpg')
+  let pp = await conn.profilePictureUrl(who, 'image').catch(_ => './assets/qasim.jpg')
   let user = global.db.data.users[who]
 
   let infobt = `
-≡ *INFO BOT*
+≡ INFO BOT
   
-*STATE*
-▢ *${groupsIn.length}* GROUP CHATS
-▢ *${groupsIn.length}* united groups
-▢ *${groupsIn.length - groupsIn.length}* abandoned groups
-▢ *${chats.length - groupsIn.length}* private chats
-▢ *${chats.length}* Total Chats
+STATE
+▢ ${groupsIn.length} GROUP CHATS
+▢ ${groupsIn.length} united groups
+▢ ${groupsIn.length - groupsIn.length} abandoned groups
+▢ ${chats.length - groupsIn.length} private chats
+▢ ${chats.length} Total Chats
 
-*≡ OWNER*
+≡ OWNER
 ▢ Instagram :
   • https://instagram.com/global.techinfo
 ▢ GitHub :
@@ -74,25 +80,26 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 ▢ credit: 
   • mr oreo
 
- *≡ S E R V E R*
-*🛑 RAM:* ${format(totalmem() - freemem())} / ${format(totalmem())}
-*🔵 FreeRAM:* ${format(freemem())}
+≡ SERVER
+🛑 RAM: ${format(totalmem() - freemem())} / ${format(totalmem())}
+🔵 FreeRAM: ${format(freemem())}
 
-*≡  NodeJS memory*
+≡ NodeJS memory
 ${
-  '```' +
+  '' +
   Object.keys(used)
     .map(
       (key, _, arr) =>
         `${key.padEnd(Math.max(...arr.map(v => v.length)), ' ')}: ${format(used[key])}`
     )
     .join('\n') +
-  '```'
+  ''
 }
 `
   conn.sendFile(m.chat, pp, 'prefil.jpg', infobt, m, false, { mentions: [who] })
   m.react(done)
 }
+
 handler.help = ['info']
 handler.tags = ['main']
 handler.command = ['info', 'infobot', 'botinfo']
