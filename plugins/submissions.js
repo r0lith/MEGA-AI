@@ -1,99 +1,91 @@
-import fetch from 'node-fetch';
-import https from 'https';
+// Command metadata
+// Description: Fetch and parse submissions from a website
+// Usage: !submissions
+// Author: Your Name
+// Date: YYYY-MM-DD
 
-// Create an HTTPS agent to bypass SSL verification
-const agent = new https.Agent({ rejectUnauthorized: false });
+import puppeteer from 'puppeteer';
 
-const handler = async (m, { conn }) => {
+const handler = async (m, { conn, text }) => {
   conn.mywebsite = conn.mywebsite ? conn.mywebsite : {};
+
+  if (conn.mywebsite[m.sender] && conn.mywebsite[m.sender].awaitingReply) {
+    const selectedNumber = parseInt(text, 10);
+    const limitedResults = conn.mywebsite[m.sender].results;
+
+    if (selectedNumber >= 1 && selectedNumber <= 5) {
+      const selectedItem = limitedResults[selectedNumber - 1];
+      const selectedContent = `*Anonymous Message #${selectedNumber}*\n\n*Subject:* *${selectedItem.content[0]}*\n\n${selectedItem.content[1]}\n-------------------------\nHave something to say but you can't open up? Share yourself at *The Comfort Corner* Anonymously: https://comfortcorner.unaux.com/`;
+      await conn.reply(m.chat, selectedContent, m);
+    } else {
+      await conn.reply(m.chat, 'Please reply with a number between 1 and 5.', m);
+    }
+
+    // Clear the state after handling the reply
+    delete conn.mywebsite[m.sender].awaitingReply;
+    return;
+  }
+
   await conn.reply(m.chat, 'Please wait...', m);
 
   try {
-    // Fetch the HTML content of the submissions page
-    const url = 'https://comfortcorner.unaux.com/submissions/';
-    const response = await fetch(url, { agent });
-    if (!response.ok) throw new Error('Failed to fetch the website content');
-    const html = await response.text();
+    // Launch a headless browser with necessary flags
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
 
-    console.log(html); // Debug: Log the fetched HTML
+    // Navigate to the URL and wait for the JavaScript challenge to complete
+    const url = 'https://comfortcorner.unaux.com/wp-json/cf7-views/v1/get-data';
+    await page.goto(url, { waitUntil: 'networkidle2' });
 
-    // Parse the HTML to extract data
-    const results = [];
-    const regex = /<tr>([\s\S]*?)<\/tr>/g;
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      const trHtml = match[1];
-      const subjectMatch = /<td class="field-your-subject">([\s\S]*?)<\/td>/i.exec(trHtml);
-      const messageMatch = /<td class="field-your-message">([\s\S]*?)<\/td>/i.exec(trHtml);
+    // Get the page content after the JavaScript challenge
+    const pageContent = await page.evaluate(() => document.body.innerText);
 
-      console.log('trHtml:', trHtml); // Debug: Log each <tr>
-      console.log('subjectMatch:', subjectMatch); // Debug: Log matched subject
-      console.log('messageMatch:', messageMatch); // Debug: Log matched message
+    console.log('Fetched Response Text:', pageContent); // Debug: Log the fetched response text
 
-      if (subjectMatch && messageMatch) {
-        results.push({
-          subject: subjectMatch[1].trim(),
-          message: messageMatch[1].trim(),
-        });
-      }
+    // Close the browser
+    await browser.close();
+
+    // Attempt to parse the response as JSON
+    let json;
+    try {
+      json = JSON.parse(pageContent);
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+      await conn.reply(m.chat, 'An error occurred while parsing the response.', m);
+      return;
     }
 
-    console.log('Parsed Results:', results); // Debug: Log parsed results
+    console.log('Fetched JSON:', json); // Debug: Log the fetched JSON
 
-    // Check if no results were parsed
-    if (results.length === 0) {
-      await conn.reply(m.chat, 'No submissions found.', m);
+    // Check if the response is successful
+    if (!json.success) {
+      await conn.reply(m.chat, 'Failed to fetch submissions.', m);
       return;
     }
 
     // Limit the results to the first 5 entries
-    const limitedResults = results.slice(0, 5);
+    const limitedResults = json.data.slice(0, 5);
 
     // Prepare the message with the parsed data
     const infoText = `✦ ──『 *WEBSITE SUBMISSIONS* 』── ✦\n\n[ ⭐ Reply with the number of the desired submission to get more details]. \n\n`;
     const orderedLinks = limitedResults
-      .map((item, index) => `*${index + 1}.* ${item.subject}`)
+      .map((item, index) => `*${index + 1}.* ${item.content[0]}`) // Listing the first element of the content array
       .join('\n\n');
     const fullText = `${infoText}\n\n${orderedLinks}`;
 
     console.log('Final Message:', fullText); // Debug: Log the final message
 
     // Send the message and store data for further interaction
-    const { key } = await conn.reply(m.chat, fullText, m);
+    await conn.reply(m.chat, fullText, m);
     conn.mywebsite[m.sender] = {
       results: limitedResults,
-      key,
-      timeout: setTimeout(() => {
-        conn.sendMessage(m.chat, { delete: key });
-        delete conn.mywebsite[m.sender];
-      }, 150 * 1000),
+      awaitingReply: true,
     };
   } catch (error) {
-    await conn.reply(m.chat, `Error: ${error.message}`, m);
-  }
-};
-
-// This function handles the user's reply to the bot message
-handler.before = async (m, { conn }) => {
-  conn.mywebsite = conn.mywebsite ? conn.mywebsite : {};
-  if (m.isBaileys || !(m.sender in conn.mywebsite)) return;
-
-  const { results, key, timeout } = conn.mywebsite[m.sender];
-  if (!m.quoted || m.quoted.id !== key.id || !m.text) return;
-
-  const choice = m.text.trim();
-  const inputNumber = Number(choice);
-  if (inputNumber >= 1 && inputNumber <= results.length) {
-    const selectedItem = results[inputNumber - 1];
-    console.log('Selected Item:', selectedItem); // Debug: Log the selected item
-
-    // Send the details of the selected item
-    const detailsText = `*Subject:* ${selectedItem.subject}\n*Message:* ${selectedItem.message}`;
-    await conn.reply(m.chat, detailsText, m);
-  } else {
-    m.reply(
-      `Invalid sequence number. Please select a number from the list above (1 to ${results.length}).`
-    );
+    console.error('Error:', error);
+    await conn.reply(m.chat, 'An error occurred while fetching submissions.', m);
   }
 };
 
