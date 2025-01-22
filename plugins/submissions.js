@@ -53,7 +53,7 @@ const handler = async (m, { conn, text }) => {
     // Limit the results to the first 5 entries
     const limitedResults = json.data.slice(0, 5);
     // Prepare the message with the parsed data
-    const infoText = `✦ ──『 *WEBSITE SUBMISSIONS* 』── ✦\n\n[ ⭐ Reply with the number of the desired submission to get more details]. \n\n`;
+    const infoText = "Comfort Corner Submissions:\n\nReply with the number of the desired submission to get more details.\n";
     const orderedLinks = limitedResults
       .map((item, index) => `*${index + 1}.* ${item.content[0]}`) // Listing the first element of the content array
       .join('\n\n');
