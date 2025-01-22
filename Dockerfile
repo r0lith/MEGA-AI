@@ -21,7 +21,12 @@ RUN apt-get update && \
   libwayland-client0 \
   libwayland-cursor0 \
   libwayland-egl1 \
-  libepoxy0 && \
+  libepoxy0 \
+  libcups2 \
+  fonts-liberation \
+  libfontconfig1 \
+  libjpeg62-turbo \
+  libxshmfence1 && \
   apt-get upgrade -y && \
   rm -rf /var/lib/apt/lists/*
 
