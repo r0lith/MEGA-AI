@@ -1,4 +1,5 @@
 let handler = async (m, { conn, text, usedPrefix, command, isOwner }) => {
+    console.log('ralive command triggered'); // Debugging log
     if (!isOwner) throw `✳️ This command can only be run by the owner.`;
   
     // Sound
@@ -27,6 +28,7 @@ let handler = async (m, { conn, text, usedPrefix, command, isOwner }) => {
   
     // Send the message with the external ad reply
     await conn.sendMessage(m.chat, messageContent, { quoted: con });
+    console.log('Message sent'); // Debugging log
   };
   
   handler.help = ['ralive'];
