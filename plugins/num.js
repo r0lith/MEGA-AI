@@ -1,50 +1,21 @@
 import fs from 'fs';
-import csv from 'csv-parser';
-import { Readable } from 'stream';
 
-let handler = async (m, { conn, isOwner, quoted }) => {
+let handler = async (m, { conn, isOwner, text }) => {
   if (!isOwner) throw `✳️ This command can only be run by the owner.`;
 
-  if (!quoted || !quoted.mimetype || !quoted.mimetype.includes('text/csv')) {
-    throw 'Please reply to a CSV file containing phone numbers.';
+  if (!text) {
+    throw 'Please send a message containing phone numbers, each on a new line.';
   }
 
-  console.log('CSV file detected, processing...');
+  console.log('Message detected, processing...');
 
-  let buffer = await quoted.download();
-  console.log('Buffer downloaded:', buffer);
-
-  let phoneNumbers = [];
-
-  // Convert buffer to readable stream
-  let stream = new Readable();
-  stream.push(buffer);
-  stream.push(null);
-
-  // Parse the CSV file
-  await new Promise((resolve, reject) => {
-    stream.pipe(csv())
-      .on('data', (row) => {
-        console.log('Row data:', row);
-        if (row.phoneNumber) {
-          phoneNumbers.push(row.phoneNumber.trim());
-        } else {
-          console.log('No phoneNumber field found in row:', row);
-        }
-      })
-      .on('end', () => {
-        console.log('CSV parsing completed. Phone numbers:', phoneNumbers);
-        resolve();
-      })
-      .on('error', (error) => {
-        console.error('Error parsing CSV:', error);
-        reject(error);
-      });
-  });
+  let phoneNumbers = text.split('\n').map(number => number.trim()).filter(number => number);
 
   if (phoneNumbers.length === 0) {
-    throw 'No phone numbers found in the CSV file.';
+    throw 'No phone numbers found in the message.';
   }
+
+  console.log('Phone numbers extracted:', phoneNumbers);
 
   let groups = await conn.groupFetchAllParticipating();
   let results = [];
