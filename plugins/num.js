@@ -8,6 +8,8 @@ let handler = async (m, { conn, isOwner, quoted }) => {
     throw 'Please reply to a CSV file containing phone numbers.';
   }
 
+  console.log('CSV file detected, processing...');
+
   let buffer = await quoted.download();
   let phoneNumbers = [];
 
@@ -16,11 +18,26 @@ let handler = async (m, { conn, isOwner, quoted }) => {
     let stream = fs.createReadStream(buffer);
     stream.pipe(csv())
       .on('data', (row) => {
-        phoneNumbers.push(row.phoneNumber.trim());
+        console.log('Row data:', row);
+        if (row.phoneNumber) {
+          phoneNumbers.push(row.phoneNumber.trim());
+        } else {
+          console.log('No phoneNumber field found in row:', row);
+        }
       })
-      .on('end', resolve)
-      .on('error', reject);
+      .on('end', () => {
+        console.log('CSV parsing completed. Phone numbers:', phoneNumbers);
+        resolve();
+      })
+      .on('error', (error) => {
+        console.error('Error parsing CSV:', error);
+        reject(error);
+      });
   });
+
+  if (phoneNumbers.length === 0) {
+    throw 'No phone numbers found in the CSV file.';
+  }
 
   let groups = await conn.groupFetchAllParticipating();
   let results = [];
