@@ -28,7 +28,7 @@ let handler = async (m, { conn, isOwner, text }) => {
       let group = groups[groupId];
       console.log(`Checking group: ${group.subject}`);
       for (let participant of group.participants) {
-        console.log(`Participant JID: ${participant.jid}`);
+        console.log('Participant object:', participant);
         if (participant.jid && participant.jid.includes(phoneNumber)) {
           groupCount++;
           groupNames.push(group.subject);
