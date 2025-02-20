@@ -33,6 +33,9 @@ let handler = async (m, { conn, isOwner, text }) => {
     }
 
     results.push(`The phone number ${phoneNumber} is in ${groupCount} groups:\n${groupNames.join('\n')}`);
+
+    // Add a delay between requests to avoid rate limit
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
   let messageContent = {
