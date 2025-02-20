@@ -1,5 +1,6 @@
 import fs from 'fs';
 import csv from 'csv-parser';
+import { Readable } from 'stream';
 
 let handler = async (m, { conn, isOwner, quoted }) => {
   if (!isOwner) throw `✳️ This command can only be run by the owner.`;
@@ -11,11 +12,17 @@ let handler = async (m, { conn, isOwner, quoted }) => {
   console.log('CSV file detected, processing...');
 
   let buffer = await quoted.download();
+  console.log('Buffer downloaded:', buffer);
+
   let phoneNumbers = [];
+
+  // Convert buffer to readable stream
+  let stream = new Readable();
+  stream.push(buffer);
+  stream.push(null);
 
   // Parse the CSV file
   await new Promise((resolve, reject) => {
-    let stream = fs.createReadStream(buffer);
     stream.pipe(csv())
       .on('data', (row) => {
         console.log('Row data:', row);
