@@ -18,21 +18,42 @@ let handler = async (m, { conn, isOwner, text }) => {
   console.log('Phone numbers extracted:', phoneNumbers);
 
   let groups = await conn.groupFetchAllParticipating();
+  let participantMap = new Map();
+
+  // Preprocess the groups to create a mapping of country codes and number series to participants
+  for (let groupId in groups) {
+    let group = groups[groupId];
+    for (let participant of group.participants) {
+      if (participant.id) {
+        let countryCode = participant.id.slice(0, participant.id.length - 15); // Extract country code
+        let numberSeries = participant.id.slice(0, 5); // Extract number series
+        if (!participantMap.has(countryCode)) {
+          participantMap.set(countryCode, new Map());
+        }
+        if (!participantMap.get(countryCode).has(numberSeries)) {
+          participantMap.get(countryCode).set(numberSeries, []);
+        }
+        participantMap.get(countryCode).get(numberSeries).push({ group: group.subject, id: participant.id });
+      }
+    }
+  }
+
   let results = [];
 
   for (let phoneNumber of phoneNumbers) {
     let groupCount = 0;
     let groupNames = [];
 
-    for (let groupId in groups) {
-      let group = groups[groupId];
-      console.log(`Checking group: ${group.subject}`);
-      for (let participant of group.participants) {
-        console.log('Participant object:', participant);
-        if (participant.id && participant.id.includes(phoneNumber)) {
+    // Extract country code and number series from the phone number
+    let countryCode = phoneNumber.slice(0, phoneNumber.length - 10);
+    let numberSeries = phoneNumber.slice(0, 5);
+
+    if (participantMap.has(countryCode) && participantMap.get(countryCode).has(numberSeries)) {
+      let participants = participantMap.get(countryCode).get(numberSeries);
+      for (let participant of participants) {
+        if (participant.id.includes(phoneNumber)) {
           groupCount++;
-          groupNames.push(group.subject);
-          break;
+          groupNames.push(participant.group);
         }
       }
     }
