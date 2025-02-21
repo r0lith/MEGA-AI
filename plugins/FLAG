@@ -9,8 +9,8 @@ let handler = async (m, { conn, participants, groupMetadata, args }) => {
     `.trim()
     conn.sendMessage(m.chat, text, { mentions: [...groupAdmins.map(v => v.id), owner] })
 }
-handler.help = ['staff']
+handler.help = ['flag']
 handler.tags = ['group']
-handler.command = ['flag'] 
+handler.command = ['flag', 'f'] 
 handler.group = true
 export default handler
