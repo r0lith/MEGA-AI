@@ -1,18 +1,18 @@
 let handler = async (m, { conn, participants, groupMetadata }) => {
-  const groupAdmins = participants.filter(p => p.admin);
-
-  let text = `
-≡ *FLAGGED MESSAGE IN GROUP* _${groupMetadata.subject}_
-
-New message has been flagged!
-`.trim();
-
-  await conn.sendMessage(m.chat, { text });
-};
-
-handler.help = ['flag'];
-handler.tags = ['group'];
-handler.command = /^(flag)$/i;
-handler.group = true;
-
-export default handler;
+    const groupAdmins = participants.filter(p => p.admin);
+  
+    let text = `
+  ≡ *FLAGGED MESSAGE IN GROUP* _${groupMetadata.subject}_
+  
+  New message has been flagged!
+  `.trim();
+  
+    await conn.sendMessage(m.chat, { text }, { quoted: m.quoted });
+  };
+  
+  handler.help = ['flag'];
+  handler.tags = ['group'];
+  handler.command = /^(flag)$/i;
+  handler.group = true;
+  
+  export default handler;
