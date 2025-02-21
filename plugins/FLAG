@@ -15,8 +15,13 @@ let handler = async (m, { conn, participants, groupMetadata }) => {
   
       console.log('Text to send:', text);
   
-      await conn.sendMessage(m.chat, { text }, { quoted: m.quoted });
-      console.log('Message sent');
+      if (m.quoted) {
+        console.log('Quoted message:', m.quoted);
+        await conn.sendMessage(m.chat, { text }, { quoted: m.quoted });
+        console.log('Message sent');
+      } else {
+        console.log('No quoted message found');
+      }
     } catch (error) {
       console.error('Error in flag handler:', error);
     }
