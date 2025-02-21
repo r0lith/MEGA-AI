@@ -1,16 +1,13 @@
 let handler = async (m, { conn, participants, groupMetadata, args }) => {
     const groupAdmins = participants.filter(p => p.admin)
-    const listAdmin = groupAdmins.map((v, i) => `${i + 1}. @${v.id.split('@')[0]}`).join('\n▢ ')
-    const owner = groupMetadata.owner || groupAdmins.find(p => p.admin === 'superadmin')?.id || m.chat.split`-`[0] + '@s.whatsapp.net'
+    const listAdmin = groupAdmins.map((v, i) => `${i + 1}. @${v.id.split('@')[0]}`).join('\n')
 
     let text = `
-≡ *STAFF DEL GRUPO* _${groupMetadata.subject}_
+New message has been flagged!
 
-┌─⊷ *ADMINS*
-▢ ${listAdmin}
-└───────────
+${listAdmin}
 `.trim()
-    conn.sendMessage(m.chat, { text: text, mentions: [...groupAdmins.map(v => v.id), owner] })
+    conn.sendMessage(m.chat, { text: text, mentions: [...groupAdmins.map(v => v.id)] })
 }
 
 handler.help = ['staff']
