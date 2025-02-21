@@ -1,35 +1,16 @@
-let handler = async (m, { conn, participants, groupMetadata }) => {
-    try {
-      console.log('Handler triggered');
-      console.log('Participants:', participants);
-      console.log('Group Metadata:', groupMetadata);
-  
-      const groupAdmins = participants.filter(p => p.admin);
-      console.log('Group Admins:', groupAdmins);
-  
-      let text = `
-  ≡ *FLAGGED MESSAGE IN GROUP* _${groupMetadata.subject}_
-  
-  New message has been flagged!
-  `.trim();
-  
-      console.log('Text to send:', text);
-  
-      if (m.quoted) {
-        console.log('Quoted message:', m.quoted);
-        await conn.sendMessage(m.chat, { text }, { quoted: m.quoted });
-        console.log('Message sent');
-      } else {
-        console.log('No quoted message found');
-      }
-    } catch (error) {
-      console.error('Error in flag handler:', error);
-    }
-  };
-  
-  handler.help = ['flag'];
-  handler.tags = ['group'];
-  handler.command = /^(flag)$/i;
-  handler.group = true;
-  
-  export default handler;
+let handler = async (m, { conn, participants, groupMetadata, args }) => {
+    const groupAdmins = participants.filter(p => p.admin)
+    const adminTags = groupAdmins.map(v => `@${v.id.split('@')[0]}`).join(' ')
+    const owner = groupMetadata.owner || groupAdmins.find(p => p.admin === 'superadmin')?.id || m.chat.split`-`[0] + '@s.whatsapp.net'
+    
+    let text = `
+    New message has been flagged!
+    ${adminTags}
+    `.trim()
+    conn.sendMessage(m.chat, text, { mentions: [...groupAdmins.map(v => v.id), owner] })
+}
+handler.help = ['staff']
+handler.tags = ['group']
+handler.command = ['flag'] 
+handler.group = true
+export default handler
