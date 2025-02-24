@@ -1,6 +1,23 @@
 let handler = async (m, { conn, usedPrefix, command, text }) => {
-    if (!m.mentionedJid[0] && !m.quoted) return m.reply(`✳️ Please use the command correctly\n\n*${usedPrefix + command}* @tag <communityNumber>`);
-    let user = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted.sender;
+    if (!m.mentionedJid[0] && !m.quoted && !text.includes('+')) {
+        return m.reply(`✳️ Please use the command correctly\n\n*${usedPrefix + command}* @tag or +<phoneNumber> <communityNumber>`);
+    }
+
+    let user;
+    if (m.mentionedJid[0]) {
+        user = m.mentionedJid[0];
+    } else if (m.quoted) {
+        user = m.quoted.sender;
+    } else {
+        const parts = text.split(' ');
+        user = parts[0].includes('+') ? parts[0].replace('+', '') + '@s.whatsapp.net' : null;
+        text = parts.slice(1).join(' ');
+    }
+
+    if (!user) {
+        return m.reply(`✳️ Please use the command correctly\n\n*${usedPrefix + command}* @tag or +<phoneNumber> <communityNumber>`);
+    }
+
     if (conn.user.jid.includes(user)) return m.reply(`✳️ I cannot kick myself`);
 
     const communityNumber = text.trim();
@@ -19,7 +36,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
     }
 }
 
-handler.help = ['ckick @user <communityNumber>'];
+handler.help = ['ckick @user or +<phoneNumber> <communityNumber>'];
 handler.tags = ['group'];
 handler.command = ['ckick', 'expulsarcomunidad'];
 handler.admin = true;
