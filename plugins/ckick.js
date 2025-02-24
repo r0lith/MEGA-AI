@@ -8,7 +8,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
         return m.reply(`❌ Error: Please specify a valid community number (1 For Vadodara or 2 For Ahmedabad)`);
     }
 
-    const communityJid = communityNumber === '1' ? '1234567890-123456789@g.us' : '0987654321-987654321@g.us';
+    const communityJid = communityNumber === '1' ? '120363255340111236@g.us' : '120363257304349229@g.us';
 
     try {
         await conn.groupParticipantsUpdate(communityJid, [user], 'remove');
