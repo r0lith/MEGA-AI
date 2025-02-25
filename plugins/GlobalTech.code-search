@@ -1,0 +1,182 @@
+# Query: GlobalTech
+# ContextLines: 1
+
+42 results - 26 files
+
+app.json:
+  6    ],
+  7:   "repository": "https://github.com/GlobalTechInfo/MEGA-AI",
+  8    "stack": "container",
+
+CODEOWNERS:
+  3  
+  4:                @GlobalTechInfo
+  5                 @qasimali1st
+
+config.js:
+  80  global.dygp = 'https://whatsapp.com/channel/0029VagJIAr3bbVBCpEkAM07'
+  81: global.fgsc = 'https://github.com/GlobalTechInfo/MEGA-AI'
+  82: global.fgyt = 'https://youtube.com/@GlobalTechInfo'
+  83: global.fgpyp = 'https://youtube.com/@GlobalTechInfo'
+  84  global.fglog = 'https://i.ibb.co/G2dh9cB/qasim.jpg'
+
+global.js:
+  560      const msg = `*MEGA-AI GOT CONNECTED* \n\n *SUPPORT BY SUBSCRIBE*
+  561: *youtube.com/@GlobalTechInfo*`
+  562  
+
+LICENSE:
+  177  
+  178:    Copyright 2025 GlobalTechInfo
+  179  
+
+package.json:
+   30      ],
+   31:     "homepage": "https://github.com/GlobalTechInfo/MEGA-AI",
+   32      "author": {
+   33:         "name": "GlobalTechInfo"
+   34      },
+
+   36          "type": "git",
+   37:         "url": "git+https://github.com/GlobalTechInfo/MEGA-AI.git"
+   38      },
+   39      "bugs": {
+   40:         "url": "https://github.com/GlobalTechInfo/MEGA-AI/issues"
+   41      },
+
+  132      {
+  133:       "name": "GlobalTechInfo",
+  134        "role": "Maintainer"
+
+.github\FUNDING.yml:
+  1: github: GlobalTechInfo
+  2  
+
+plugins\_fakeReply.js:
+  16  	//reply link yt
+  17:     global.rpyt = { contextInfo: { externalAdReply: { showAdAttribution: true, mediaUrl: 'https://i.ibb.co/9HY4wjz/a4c0b1af253197d4837ff6760d5b81c0.jpg', mediaType: 'VIDEO', description: 'SUBSCRIBE : YT CHANNEL', title: 'YouTube', body: 'learn to create your own bots', thumbnailUrl: 'https://i.ibb.co/9HY4wjz/a4c0b1af253197d4837ff6760d5b81c0.jpg', sourceUrl: 'https://youtube.com/@GlobalTechInfo' }}}
+  18  
+  19  //reply link WhatsApp Channel
+  20:     global.rpwp = { contextInfo: { externalAdReply: { showAdAttribution: true, mediaUrl: 'https://i.ibb.co/9HY4wjz/a4c0b1af253197d4837ff6760d5b81c0.jpg', mediaType: 'VIDEO', description: 'Follow Channel', title: 'FOLLOW CHANNEL', body: '© GlobalTechInfo', thumbnailUrl: 'https://i.ibb.co/9HY4wjz/a4c0b1af253197d4837ff6760d5b81c0.jpg', sourceUrl: 'https://whatsapp.com/channel/0029VagJIAr3bbVBCpEkAM07' }}}
+  21      
+
+plugins\Dalle.js:
+  16        let imgurl = await uploadImage(imageBuffer)
+  17:       await conn.sendButton(m.chat,'Here is your Result', author, imgurl, [['Script', `.sc`]], null, [['Aee`]], m)
+  18      } else {
+
+plugins\dl_play2.js:
+  30  > CAN NOT DOWNLOAD FOR YOU WE ARE FIXING THE PROBLEM.
+  31: > © GlobalTechInfo
+  32  ❍─━━━━⊱༻●༺⊰━━━━─❍`;
+
+plugins\dl-gitclone.js:
+  4    if (!args[0])
+  5:     throw `Where is the github link?\n\n📌 Example : ${usedPrefix + command} https://github.com/Username`
+  6    if (!regex.test(args[0])) throw '⚠️ link incorrect'
+
+plugins\dl-github.js:
+  3      if (!args[0]) {
+  4:         return m.reply('Username and Repository name is missing. Example: VSS');
+  5      }
+
+plugins\dl-githubStalk.js:
+  4  let handler = async (m, { conn, args, text, usedPrefix, command }) => {
+  5:     if (!args[0]) throw `✳️ ${mssg.noUsername}\n\n📌${mssg.example} : ${usedPrefix + command}`;
+  6  
+
+plugins\main-botInfo.js:
+  76  ▢ GitHub :
+  77:   • https://github.com/GlobalTechInfo
+  78  ▢ YouTube : 
+  79:   • https://youtube.com/@GlobalTechInfo
+  80  ▢ credit: 
+
+plugins\main-creator.js:
+  5  FN:Qasim Ali
+  6: ORG:GlobalTechInfo
+  7  TITLE:Owner
+
+plugins\main-list.js:
+  110  ◈ •mrcs
+  111: ◈ © GlobalTechInfo
+  112  ╰─────────❍` // Your bot menu message here
+
+plugins\main-menu4.js:
+  29        『 ULTRA-MD 』  
+  30:       © 2024 GlobalTechInfo`;
+  31  
+
+  92                                      "display_text": "SCRIPT 💕",
+  93:                                     "url": ""
+  94                                  })
+
+plugins\main-owner.js:
+  12  FN:Owner
+  13: ORG:GlobalTechInfo
+  14  TITLE:Owner
+
+plugins\main-ping.js:
+   9        contactMessage: {
+  10:         displayName: `Rolith`,
+  11          vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;a,;;;\nFN:'Riruru'\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`,
+
+plugins\main-qasim.js:
+   4  
+   5: ≡ © GlobalTechInfo Groups
+   6  
+
+  11  ▢ Group 2
+  12: https://t.me/GlobalTechOwner
+  13  
+
+  17  ▢ Group WhatsApp 
+  18:  https://GlobalTechInc
+  19  ─────────────
+
+  23  ▢ *YouTube*
+  24: • https://www.youtube.com/@GlobalTechInfo
+  25  
+
+plugins\main-script.js:
+  5  let handler = async function (m, { conn, __dirname }) {
+  6:   const githubRepoURL = 'https://github.com/'
+  7  
+
+plugins\menu.js:
+  24        『 *Riruru* 』  
+  25:       © 2025 *Riruru*`;
+  26  
+
+  95                                      "display_text": "SCRIPT 💕",
+  96:                                     "url": ""
+  97                                  })
+
+plugins\New.js:
+  13    2. 𝐈𝐟 𝐓𝐡𝐢𝐬 𝐈𝐬 𝐍𝐨𝐭 𝐓𝐡𝐞 𝐑𝐞𝐚𝐥 𝐎𝐰𝐧𝐞𝐫 𝐏𝐥𝐞𝐚𝐬𝐞 𝐂𝐨𝐧𝐭𝐚𝐜𝐭 𝐓𝐡𝐞 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫 𝐅𝐨𝐫 𝐇𝐞𝐥𝐩
+  14:   > *919737825303* *Rolith*
+  15    __________________________
+
+plugins\owner-intro.js:
+  37  
+  38:     const sourceUrl = 'https://youtube.com/'; // Example source URL for the card
+  39  
+
+  44          body: '𝑇𝛩𝑈𝐶𝛨 𝛨𝛯𝑅𝛯',
+  45:         thumbnailUrl: 'https://github.com/', // Fixed URL syntax with quotes
+  46:         mediaUrl: 'https://github.com/', // Fixed URL syntax with quotes
+  47          sourceUrl: sourceUrl, // Source URL for the card
+
+plugins\plugin-all.js:
+  35          body: botname,
+  36:         sourceUrl: 'https://github.com/GlobalTechInfo/EXTERNAL-PLUGINS',
+  37          thumbnailUrl: _0x1cd378,
+
+  67      '18WIBnHw',
+  68:     '*ULTRA\x20MD\x20EXTERNAL\x20PLUGINS*\x20\x0a\x0ahttps://github.com/GlobalTechInfo/EXTERNAL-PLUGINS',
+  69      '286610EXPZvD',
+
+plugins\tool-autosticker.js:
+  13      let stiker = false
+  14:     let wm = 'Rolith'
+  15      let mime = (q.msg || q).mimetype || q.mediaType || ''
