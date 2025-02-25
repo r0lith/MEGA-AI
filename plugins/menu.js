@@ -22,7 +22,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 
     let str = `
       『 *MEGA-AI* 』  
-      © 2025 *GlobalTechInfo*`;
+      © 2025 *Riruru*`;
 
     let msg = generateWAMessageFromContent(m.chat, {
         viewOnceMessage: {
@@ -93,7 +93,7 @@ let handler = async (m, { conn, usedPrefix }) => {
                                 "name": "cta_url",
                                 "buttonParamsJson": JSON.stringify({
                                     "display_text": "SCRIPT 💕",
-                                    "url": "https://github.com/GlobalTechInfo/ULTRA-MD"
+                                    "url": "https://github.com/Riruru/ULTRA-MD"
                                 })
                             }
                         ],

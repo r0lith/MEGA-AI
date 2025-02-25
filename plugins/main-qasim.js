@@ -2,7 +2,7 @@ let handler = async m =>
   m.reply(
     `
 
-≡ © GlobalTechInfo Groups
+≡ © Riruru Groups
 
 ─────────────
 ▢ Join WhatsApp Channel For Updates
@@ -21,7 +21,7 @@ https://t.me/GlobalTechOwner
  https://instagram.com/global.techinfo
 
 ▢ *YouTube*
-• https://www.youtube.com/@GlobalTechInfo
+• https://www.youtube.com/@Riruru
 
 
 `.trim()

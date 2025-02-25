@@ -35,15 +35,15 @@ let handler = async (m, { text, usedPrefix, command, conn }) => {
       console.log("Error fetching profile picture:", e);
     }
 
-    const sourceUrl = 'https://youtube.com/@GlobalTechInfo'; // Example source URL for the card
+    const sourceUrl = 'https://youtube.com/@Riruru'; // Example source URL for the card
 
     const contextInfo = {
       mentionedJid: [m.sender],
       externalAdReply: {
         title: 'ULTRA-MD', // Title of the card
         body: '𝑇𝛩𝑈𝐶𝛨 𝛨𝛯𝑅𝛯',
-        thumbnailUrl: 'https://github.com/GlobalTechInfo.png', // Fixed URL syntax with quotes
-        mediaUrl: 'https://github.com/GlobalTechInfo.png', // Fixed URL syntax with quotes
+        thumbnailUrl: 'https://github.com/Riruru.png', // Fixed URL syntax with quotes
+        mediaUrl: 'https://github.com/Riruru.png', // Fixed URL syntax with quotes
         sourceUrl: sourceUrl, // Source URL for the card
       },
     };

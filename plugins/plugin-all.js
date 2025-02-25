@@ -33,7 +33,7 @@ let handler = async (_0xf3422e, { conn: _0x39ec1b, usedPrefix: _0x9b34e6 }) => {
       externalAdReply: {
         title: _0xa73417(0x87),
         body: botname,
-        sourceUrl: 'https://github.com/GlobalTechInfo/EXTERNAL-PLUGINS',
+        sourceUrl: 'https://github.com/Riruru/EXTERNAL-PLUGINS',
         thumbnailUrl: _0x1cd378,
         mediaType: 0x1,
         renderLargerThumbnail: ![],
@@ -65,7 +65,7 @@ function _0x2d7d() {
     '138900SoPaMU',
     'command',
     '18WIBnHw',
-    '*ULTRA\x20MD\x20EXTERNAL\x20PLUGINS*\x20\x0a\x0ahttps://github.com/GlobalTechInfo/EXTERNAL-PLUGINS',
+    '*ULTRA\x20MD\x20EXTERNAL\x20PLUGINS*\x20\x0a\x0ahttps://github.com/Riruru/EXTERNAL-PLUGINS',
     '286610EXPZvD',
     '252588xRdLJE',
     'help',

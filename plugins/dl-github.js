@@ -1,7 +1,7 @@
 let handler = async (m, { args, usedPrefix, command }) => {
     // Check if the username (args[0]) is provided
     if (!args[0]) {
-        return m.reply('Username and Repository name is missing. Example: GlobalTechInfo ULTRA-MD');
+        return m.reply('Username and Repository name is missing. Example: Riruru ULTRA-MD');
     }
 
     // Check if the repository (args[1]) is provided

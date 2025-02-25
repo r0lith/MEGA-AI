@@ -28,16 +28,16 @@
         "MD",
         "baileys-md"
     ],
-    "homepage": "https://github.com/GlobalTechInfo/MEGA-AI",
+    "homepage": "https://github.com/Riruru/MEGA-AI",
     "author": {
-        "name": "GlobalTechInfo"
+        "name": "Riruru"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/GlobalTechInfo/MEGA-AI.git"
+        "url": "git+https://github.com/Riruru/MEGA-AI.git"
     },
     "bugs": {
-        "url": "https://github.com/GlobalTechInfo/MEGA-AI/issues"
+        "url": "https://github.com/Riruru/MEGA-AI/issues"
     },
     "license": "Apache License 2.0",
     "dependencies": {
@@ -130,7 +130,7 @@
       "role": "Lead Developer"
     },
     {
-      "name": "GlobalTechInfo",
+      "name": "Riruru",
       "role": "Maintainer"
     }
   ]

@@ -2,7 +2,7 @@ import pkg from 'api-qasim';
 const { githubStalk } = pkg;
 
 let handler = async (m, { conn, args, text, usedPrefix, command }) => {
-    if (!args[0]) throw `✳️ ${mssg.noUsername}\n\n📌${mssg.example} : ${usedPrefix + command} GlobalTechInfo`;
+    if (!args[0]) throw `✳️ ${mssg.noUsername}\n\n📌${mssg.example} : ${usedPrefix + command} Riruru`;
 
     try {
         await m.react('⏳');

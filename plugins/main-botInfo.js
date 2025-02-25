@@ -74,9 +74,9 @@ STATE
 ▢ Instagram :
   • https://instagram.com/global.techinfo
 ▢ GitHub :
-  • https://github.com/GlobalTechInfo
+  • https://github.com/Riruru
 ▢ YouTube : 
-  • https://youtube.com/@GlobalTechInfo
+  • https://youtube.com/@Riruru
 ▢ credit: 
   • mr oreo
 

@@ -28,7 +28,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 ❒ Link: ${url}
 
 > CAN NOT DOWNLOAD FOR YOU WE ARE FIXING THE PROBLEM.
-> © GlobalTechInfo
+> © Riruru
 ❍─━━━━⊱༻●༺⊰━━━━─❍`;
 
     await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: captvid }, { quoted: m });
