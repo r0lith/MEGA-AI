@@ -1,6 +1,8 @@
 //import db from '../lib/database.js'
 
 let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isROwner }) => {
+  if (!isOwner) throw `✳️ This command can only be run by the owner.`; // Add this line to restrict to owner only
+
   let isEnable = /true|enable|(turn)?on|1/i.test(command)
   let chat = global.db.data.chats[m.chat]
   let user = global.db.data.users[m.sender]
