@@ -3,8 +3,10 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     m.reply("🚀 Listening for WebSocket messages related to community removals...");
 
     conn.ws.on('frame', (frame) => {
-        console.log("🛰️ WebSocket Frame Detected:");
-        console.log(JSON.stringify(frame, null, 2));
+        if (frame.tag === "iq" && frame.attrs.type === "set") {  // Log only "set" frames
+            console.log("🛰️ WebSocket SET Frame Detected:");
+            console.log(JSON.stringify(frame, null, 2));
+        }
     });
 
 }
