@@ -30,8 +30,7 @@ async function joinGame(m, sock) {
     }
     
     gameData[chatId].players.push(sender);
-    const playerCount = gameData[chatId].players.length;
-    sock.sendMessage(chatId, { text: `✅ @${sender.split('@')[0]} has joined the game! (${playerCount} participants)`, mentions: [sender] });
+    sock.sendMessage(chatId, { text: `✅ @${sender.split('@')[0]} has joined the game!`, mentions: [sender] });
 }
 
 // Function to assign roles and notify players
@@ -60,11 +59,7 @@ function shuffleRoles(playerCount) {
 
 // Handler to start the game
 let handler = async (m, { conn }) => {
-    if (m.text === '/startgame') {
-        await startGame(m, conn);
-    } else if (m.text === '/join') {
-        await joinGame(m, conn);
-    }
+    await startGame(m, conn);
 }
 
 handler.help = ['wstart'];
