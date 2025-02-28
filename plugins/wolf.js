@@ -8,7 +8,7 @@ async function startGame(m, sock) {
     }
     
     gameData[chatId] = { players: [], rolesAssigned: false };
-    sock.sendMessage(chatId, { text: "🐺 *Werewolf Game Started!* 🐺\nType /join to participate! You have 2 minutes to join." });
+    sock.sendMessage(chatId, { text: "🐺 *Werewolf Game Started!* 🐺\nType wjoin to participate! You have 2 minutes to join." });
     
     // Wait 2 minutes before assigning roles
     setTimeout(() => assignRoles(chatId, sock), 120000);
@@ -63,13 +63,33 @@ function shuffleRoles(playerCount) {
 }
 
 // Handler to start the game
-let handler = async (m, { conn }) => {
+let startHandler = async (m, { conn }) => {
     await startGame(m, conn);
 }
 
-handler.help = ['wstart'];
-handler.tags = ['game'];
-handler.command = ['wstart'];
-handler.group = true;
+startHandler.help = ['wstart'];
+startHandler.tags = ['game'];
+startHandler.command = ['wstart'];
+startHandler.group = true;
 
+// Handler to join the game
+let joinHandler = async (m, { conn }) => {
+    await joinGame(m, conn);
+}
+
+joinHandler.help = ['wjoin'];
+joinHandler.tags = ['game'];
+joinHandler.command = ['wjoin'];
+joinHandler.group = true;
+
+// Listener for "wjoin" command
+let handler = m => m;
+handler.all = async function (m) {
+    if (/^wjoin$/i.test(m.text)) {
+        await joinGame(m, this);
+    }
+    return !0;
+}
+
+export { startHandler, joinHandler };
 export default handler;
