@@ -20,7 +20,7 @@ async function joinGame(m, sock) {
     const sender = m.key.participant || m.key.remoteJid;
     
     if (!gameData[chatId]) {
-        return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
+        return sock.sendMessage(chatId, { text: "No active game! Type /wstart to begin." });
     }
     if (gameData[chatId].rolesAssigned) {
         return sock.sendMessage(chatId, { text: "Role assignment has started. You can't join now!" });
@@ -30,7 +30,8 @@ async function joinGame(m, sock) {
     }
     
     gameData[chatId].players.push(sender);
-    sock.sendMessage(chatId, { text: `✅ @${sender.split('@')[0]} has joined the game!`, mentions: [sender] });
+    const playerCount = gameData[chatId].players.length;
+    sock.sendMessage(chatId, { text: `✅ @${sender.split('@')[0]} has joined the game! (${playerCount} participants)`, mentions: [sender] });
 }
 
 // Function to assign roles and notify players
@@ -57,14 +58,18 @@ function shuffleRoles(playerCount) {
     return shuffledRoles.slice(0, playerCount);
 }
 
-// Handler to start the game
+// Handler to start the game and join players
 let handler = async (m, { conn }) => {
-    await startGame(m, conn);
+    if (m.text === '/wstart') {
+        await startGame(m, conn);
+    } else if (m.text === '/join') {
+        await joinGame(m, conn);
+    }
 }
 
 handler.help = ['wstart'];
 handler.tags = ['game'];
-handler.command = ['wstart'];
+handler.command = ['wstart', 'join'];
 handler.group = true;
 
 export default handler;
