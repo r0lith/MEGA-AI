@@ -63,33 +63,21 @@ function shuffleRoles(playerCount) {
 }
 
 // Handler to start the game
-let startHandler = async (m, { conn }) => {
+let handler = async (m, { conn }) => {
     await startGame(m, conn);
 }
 
-startHandler.help = ['wstart'];
-startHandler.tags = ['game'];
-startHandler.command = ['wstart'];
-startHandler.group = true;
+handler.help = ['wstart'];
+handler.tags = ['game'];
+handler.command = ['wstart'];
+handler.group = true;
 
-// Handler to join the game
-let joinHandler = async (m, { conn }) => {
-    await joinGame(m, conn);
-}
-
-joinHandler.help = ['wjoin'];
-joinHandler.tags = ['game'];
-joinHandler.command = ['wjoin'];
-joinHandler.group = true;
+export default handler;
 
 // Listener for "wjoin" command
-let handler = m => m;
 handler.all = async function (m) {
     if (/^wjoin$/i.test(m.text)) {
         await joinGame(m, this);
     }
     return !0;
 }
-
-export { startHandler, joinHandler };
-export default handler;
