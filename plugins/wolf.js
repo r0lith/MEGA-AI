@@ -39,7 +39,7 @@ async function assignRoles(chatId, sock) {
     const game = gameData[chatId];
     if (!game || game.players.length < 3) {
         delete gameData[chatId];
-        return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 3 required." });
+        return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 3 players required." });
     }
     
     const roles = shuffleRoles(game.players.length);
