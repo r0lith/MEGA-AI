@@ -1,36 +1,35 @@
-
 let war = global.maxwarn
 let handler = async (m, { conn, text, args, groupMetadata, usedPrefix, command }) => {      
         let who
         if (m.isGroup) who = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : false
         else who = m.chat
         if (!who) throw `✳️ ${mssg.noMention}\n\n📌 ${mssg.example}: ${usedPrefix + command} @user`
-        if (conn.user.jid.includes(who)) return m.reply(`✳️ Menciona a un usuario que no sea Bot`)
+        if (conn.user.jid.includes(who)) return m.reply(`✳️ Please mention a user other than the Bot`)
         if (!(who in global.db.data.users)) throw `✳️ ${mssg.userDb}`
         let txt = text.replace('@' + who.split`@`[0], '').trim()
         let name = conn.getName(m.sender)
         let warn = global.db.data.users[who].warn
-        if (warn < war) {
+        if (warn < war - 1) { // Adjusted condition to remove on 3rd warning
             global.db.data.users[who].warn += 1
             m.reply(`
-⚠️ *${mssg.userWarn}* ⚠️
+⚠️ *Warning Issued* ⚠️
 
-▢ *${mssg.admin}:* ${name}
-▢ *${mssg.user}:* @${who.split`@`[0]}
-▢ *${mssg.warns}:* ${warn + 1}/${war}
-▢ *${mssg.with}:* ${txt}`, null, { mentions: [who] }) 
-            m.reply(`
-⚠️ *${mssg.warn.toUpperCase()}* ⚠️
-${mssg.warnRec}
-
-▢ *${mssg.warns}:* ${warn + 1}/${war} 
-${mssg.wningUser(war)}`, who)
-        } else if (warn == war) {
+▢ *Admin:* ${name}
+▢ *User:* @${who.split`@`[0]}
+▢ *Warnings:* ${warn + 1}/${war}
+▢ *Reason:* ${txt}`, null, { mentions: [who] }) 
+        } else if (warn == war - 1) { // Adjusted condition to remove on 3rd warning
             global.db.data.users[who].warn = 0
-            m.reply(`⛔ ${mssg.warnMaxU(war)}`)
+            m.reply(`⛔ You have reached the maximum number of warnings (${war}).`)
             await time(3000)
             await conn.groupParticipantsUpdate(m.chat, [who], 'remove')
-            m.reply(`♻️ Fuiste eliminado del grupo *${groupMetadata.subject}* porque ha sido advertido *${war}* veces`, who)
+            m.reply(`♻️ You have been removed from the group *${groupMetadata.subject}* for receiving *${war}* warnings.`, who)
+            m.reply(`
+⚠️ *WARNING* ⚠️
+You have been removed from the group.
+
+▢ *Warnings:* ${war}/${war} 
+${mssg.wningUser(war)}`, who)
         }
 }
 handler.help = ['warn @user']
