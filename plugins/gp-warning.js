@@ -25,17 +25,11 @@ let handler = async (m, { conn, text, args, groupMetadata, usedPrefix, command }
             await conn.groupParticipantsUpdate(m.chat, [who], 'remove')
             m.reply(`📢 *This is an automated message*  
 
-                Dear @${who.split`@`[0]},  
+Dear @${who.split`@`[0]},  
                 
-                You have been removed from the group *${groupMetadata.subject}* due to accumulating *${war}* warnings.  
+You have been removed from the group *${groupMetadata.subject}* due to accumulating *${war}* warnings.  
                 
-                If you believe this was a mistake or need further clarification, please contact the group admin.`, who)                
-            m.reply(`
-⚠️ *WARNING* ⚠️
-You have been removed from the group.
-
-▢ *Warnings:* ${war}/${war} 
-${mssg.wningUser(war)}`, who)
+If you believe this was a mistake or need further clarification, please contact the group admin.`, who)                
         }
 }
 handler.help = ['warn @user']
