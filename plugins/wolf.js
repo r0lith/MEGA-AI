@@ -62,9 +62,9 @@ let handler = async (m, { conn }) => {
     await startGame(m, conn);
 }
 
-handler.help = ['wstart']
-handler.tags = ['game']
-handler.command = ['wstart']
-handler.group = true
+handler.help = ['wstart'];
+handler.tags = ['game'];
+handler.command = ['wstart'];
+handler.group = true;
 
-module.exports = { startGame, joinGame, handler };
+export default handler;
