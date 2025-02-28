@@ -12,12 +12,12 @@ let handler = async (m, { conn, text, args, groupMetadata, usedPrefix, command }
         if (warn < war - 1) { // Adjusted condition to remove on 3rd warning
             global.db.data.users[who].warn += 1
             m.reply(`
-⚠️ *Warning Issued* ⚠️
+⚠️ *Warning Issued* ⚠️  
 
-▢ *Admin:* ${name}
-▢ *User:* @${who.split`@`[0]}
-▢ *Warnings:* ${warn + 1}/${war}
-▢ *Reason:* ${txt}`, null, { mentions: [who] }) 
+📌 *Admin:* ${name}  
+👤 *User:* @${who.split`@`[0]}  
+⚠️ *Warnings:* ${warn + 1}/${war}  
+📝 *Reason:* ${txt}`, null, { mentions: [who] }) 
         } else if (warn == war - 1) { // Adjusted condition to remove on 3rd warning
             global.db.data.users[who].warn = 0
             m.reply(`⛔ You have reached the maximum number of warnings (${war}).`)
