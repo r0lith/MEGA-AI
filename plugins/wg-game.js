@@ -20,7 +20,6 @@ async function startGame(m, sock) {
 
     console.log(`🟢 DEBUG: Creating a new game in "${chatId}".`);
 
-    // Ensure game is set up properly
     games[chatId] = {
         players: [],
         rolesAssigned: false,
@@ -31,19 +30,19 @@ async function startGame(m, sock) {
         dayCount: 1
     };
 
-    console.log(`✅ DEBUG: New game created in "${chatId}". Current games:`, games);
+    console.log(`✅ DEBUG: New game created in "${chatId}". Current games:`, JSON.stringify(games, null, 2));
 
     sock.sendMessage(chatId, { text: "🐺 *Werewolf Game Started!* 🐺\nType wjoin to participate! You have 2 minutes to join." });
 
-    // Wait 2 minutes before assigning roles
     setTimeout(() => {
-        if (games[chatId]) {  // Ensure the game still exists
+        if (games[chatId]) {  
             assignRoles(chatId, sock);
         } else {
             console.log(`❌ DEBUG: Game in "${chatId}" was deleted before role assignment.`);
         }
     }, 120000);
 }
+
 
 // Command to join the game
 async function joinGame(m, sock) {
@@ -60,9 +59,11 @@ async function joinGame(m, sock) {
     }
 
     if (!games[chatId]) {
-        console.log(`❌ DEBUG: No active game found for "${chatId}". Current games:`, games);
+        console.log(`❌ DEBUG: No active game found for "${chatId}".`);
+        console.log(`🟠 DEBUG: All active games before error:`, JSON.stringify(games, null, 2));
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
+    
 
     if (games[chatId].rolesAssigned) {
         console.log(`⚠️ DEBUG: Roles already assigned, cannot join.`);
