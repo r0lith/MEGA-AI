@@ -44,9 +44,11 @@ async function joinGame(m, sock) {
     }
 
     console.log(`User joining: ${sender}, Current Players:`, games[chatId].players);
-    games[chatId].players.push(sender);
-    const playerCount = games[chatId].players.length;
+    
+    // Ensure no duplicate entries
+    games[chatId].players = [...new Set([...games[chatId].players, sender])];
 
+    const playerCount = games[chatId].players.length;
     let responseMessage = `✅ @${sender.split('@')[0]} has joined the game!`;
     if (playerCount > 1) {
         responseMessage += `\n${playerCount} participants have joined.`;
@@ -54,6 +56,7 @@ async function joinGame(m, sock) {
 
     sock.sendMessage(chatId, { text: responseMessage, mentions: [sender] });
 }
+
 
 // Function to assign roles and notify players
 async function assignRoles(chatId, sock) {
