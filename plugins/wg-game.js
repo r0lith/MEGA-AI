@@ -58,7 +58,12 @@ async function joinGame(m, sock) {
 // Function to assign roles and notify players
 async function assignRoles(chatId, sock) {
     const game = games[chatId];
-    if (!game || game.players.length < 3) {
+
+    if (!game) {
+        return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
+    }
+
+    if (game.players.length < 3) {
         return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 5 required." });
     }
 
