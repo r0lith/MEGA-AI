@@ -12,13 +12,26 @@ function shuffleArray(array) {
 // Command to start the game
 async function startGame(m, sock) {
     const chatId = m.key.remoteJid;
+    
     if (games[chatId]) {
         return sock.sendMessage(chatId, { text: "A game is already in progress!" });
     }
-    
-    games[chatId] = { players: [], rolesAssigned: false, status: "waiting", phase: "night", votes: {}, werewolfTargets: [], dayCount: 1 };
+
+    // Ensure game is set up properly
+    games[chatId] = {
+        players: [],
+        rolesAssigned: false,
+        status: "waiting",
+        phase: "night",
+        votes: {},
+        werewolfTargets: [],
+        dayCount: 1
+    };
+
     sock.sendMessage(chatId, { text: "🐺 *Werewolf Game Started!* 🐺\nType wjoin to participate! You have 2 minutes to join." });
-    
+
+    console.log(`Game started in ${chatId}, Game State:`, games[chatId]);
+
     // Wait 2 minutes before assigning roles
     setTimeout(() => assignRoles(chatId, sock), 120000);
 }
@@ -27,8 +40,10 @@ async function startGame(m, sock) {
 async function joinGame(m, sock) {
     const chatId = m.key.remoteJid;
     let sender = m.key.participant || m.key.remoteJid;
+    
+    // Fetch correct display name
+    let senderName = m.pushName || sender.split('@')[0];
 
-    // Ensure sender is a valid user (not a group ID)
     if (!sender.includes("@s.whatsapp.net") || sender.includes("@g.us")) {
         return sock.sendMessage(chatId, { text: "Invalid player detected! Only individual users can join." });
     }
@@ -43,13 +58,14 @@ async function joinGame(m, sock) {
         return sock.sendMessage(chatId, { text: "You've already joined the game!" });
     }
 
-    console.log(`User joining: ${sender}, Current Players:`, games[chatId].players);
-    
-    // Ensure no duplicate entries
+    console.log(`User joining: ${senderName}, Current Players Before:`, games[chatId].players);
+
     games[chatId].players = [...new Set([...games[chatId].players, sender])];
 
+    console.log(`User joining: ${senderName}, Current Players After:`, games[chatId].players);
+
     const playerCount = games[chatId].players.length;
-    let responseMessage = `✅ @${sender.split('@')[0]} has joined the game!`;
+    let responseMessage = `✅ @${senderName} has joined the game!`;
     if (playerCount > 1) {
         responseMessage += `\n${playerCount} participants have joined.`;
     }
