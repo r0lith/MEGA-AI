@@ -26,8 +26,13 @@ async function startGame(m, sock) {
 // Command to join the game
 async function joinGame(m, sock) {
     const chatId = m.key.remoteJid;
-    const sender = m.key.participant || m.key.remoteJid;
-    
+    let sender = m.key.participant || m.key.remoteJid;
+
+    // Ensure sender is a valid user (not a group ID)
+    if (!sender.includes("@s.whatsapp.net")) {
+        return sock.sendMessage(chatId, { text: "Invalid player detected! Only individual users can join." });
+    }
+
     if (!games[chatId]) {
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
@@ -37,20 +42,24 @@ async function joinGame(m, sock) {
     if (games[chatId].players.includes(sender)) {
         return sock.sendMessage(chatId, { text: "You've already joined the game!" });
     }
-    
+
+    console.log(`User joining: ${sender}, Current Players:`, games[chatId].players); // debugging
     games[chatId].players.push(sender);
     const playerCount = games[chatId].players.length;
+    
     let responseMessage = `✅ @${sender.split('@')[0]} has joined the game!`;
     if (playerCount > 1) {
         responseMessage += `\n${playerCount} participants have joined.`;
     }
+
     sock.sendMessage(chatId, { text: responseMessage, mentions: [sender] });
+
 }
 
 // Function to assign roles and notify players
 async function assignRoles(chatId, sock) {
     const game = games[chatId];
-    if (!game || game.players.length < 3) {
+    if (!game || game.players.length < 5) {
         delete games[chatId];
         return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 5 required." });
     }
@@ -74,9 +83,14 @@ function assignRandomRoles(players) {
     
     let assignedRoles = {};
     players.forEach((player, index) => {
-        assignedRoles[player] = roles[roleKeys[index % roleKeys.length]];
+        const roleKey = roleKeys[index % roleKeys.length];
+        assignedRoles[player] = {
+            name: roleKey,
+            ...roles[roleKey] // Merge full role details
+        };
     });
     return assignedRoles;
+
 }
 
 // Handler to start the game
