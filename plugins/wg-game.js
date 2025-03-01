@@ -49,9 +49,9 @@ async function joinGame(m, sock) {
     let sender = m.key.participant || m.key.remoteJid;
     let senderName = m.pushName || sender.split('@')[0];
 
-    // Prevent group ID from joining
+    // 🚨 Prevent Group ID from joining as a player
     if (!sender.includes("@s.whatsapp.net")) {
-        console.log(`Error: Group ID or invalid participant detected: ${sender}`);
+        console.log(`❌ Error: Group ID detected as player (${sender})`);
         return sock.sendMessage(chatId, { text: "Invalid player detected! Only individual users can join." });
     }
 
@@ -67,11 +67,11 @@ async function joinGame(m, sock) {
         return sock.sendMessage(chatId, { text: "You've already joined the game!" });
     }
 
-    console.log(`User joining: ${senderName}, Current Players Before:`, games[chatId].players);
+    console.log(`✅ User joining: ${senderName}, Current Players Before:`, games[chatId].players);
 
     games[chatId].players = [...new Set([...games[chatId].players, sender])];
 
-    console.log(`User joining: ${senderName}, Current Players After:`, games[chatId].players);
+    console.log(`✅ User joining: ${senderName}, Current Players After:`, games[chatId].players);
 
     const playerCount = games[chatId].players.length;
     let responseMessage = `✅ @${senderName} has joined the game!`;
@@ -84,20 +84,21 @@ async function joinGame(m, sock) {
 
 
 
+
 // Function to assign roles and notify players
 async function assignRoles(chatId, sock) {
     if (!games[chatId]) {
-        console.log(`Error: Game does not exist when trying to assign roles in ${chatId}`);
+        console.log(`❌ Error: Game does not exist when trying to assign roles in ${chatId}`);
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
 
     const game = games[chatId];
 
-    if (game.players.length < 3) { // Ensure minimum players before proceeding
+    if (game.players.length < 3) {
         return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 3 required." });
     }
 
-    console.log(`Assigning roles in ${chatId}, Players:`, game.players);
+    console.log(`🎭 Assigning roles in ${chatId}, Players:`, game.players);
 
     const assignedRoles = assignRandomRoles(game.players);
     game.roles = assignedRoles;
