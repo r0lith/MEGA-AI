@@ -1,4 +1,4 @@
-const roles = require("./wg-roles"); // Import role definitions
+import roles from "./wg-roles.js"; // ✅ ES module import
 const games = {}; // Store active games
 
 // Function to shuffle an array (used for randomizing roles)
