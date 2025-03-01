@@ -70,10 +70,12 @@ async function assignRoles(chatId, sock) {
     game.status = "ongoing";
     
     game.players.forEach((player) => {
-        sock.sendMessage(player, { text: `🎭 Your role: *${game.roles[player].name}*\n📜 ${game.roles[player].description}\n⚡ Abilities: ${game.roles[player].abilities.length > 0 ? game.roles[player].abilities.join(', ') : 'None'}` });
-    });
+        console.log(`Sending role info to ${player}:`, game.roles[player]); // Debug log
     
-    sock.sendMessage(chatId, { text: `🎉 Roles assigned! Players: ${game.players.map(p => `@${p.split('@')[0]}`).join(', ')}`, mentions: game.players });
+        sock.sendMessage(player, { 
+            text: `🎭 Your role: *${game.roles[player].name}*\n📜 ${game.roles[player].description}\n⚡ Abilities: ${game.roles[player].abilities.length > 0 ? game.roles[player].abilities.join(', ') : 'None'}` 
+        });
+    });
 }
 
 // Helper function to shuffle and assign roles
@@ -84,13 +86,17 @@ function assignRandomRoles(players) {
     let assignedRoles = {};
     players.forEach((player, index) => {
         const roleKey = roleKeys[index % roleKeys.length];
+
+        // Debugging: Log role assignment
+        console.log(`Assigning role: ${roleKey}`, roles[roleKey]);
+
         assignedRoles[player] = {
             name: roleKey,
             ...roles[roleKey] // Merge full role details
         };
     });
-    return assignedRoles;
 
+    return assignedRoles;
 }
 
 // Handler to start the game
