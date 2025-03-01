@@ -14,8 +14,11 @@ async function startGame(m, sock) {
     const chatId = m.key.remoteJid;
 
     if (games[chatId]) {
+        console.log(`⚠️ DEBUG: Game already exists in "${chatId}".`);
         return sock.sendMessage(chatId, { text: "A game is already in progress!" });
     }
+
+    console.log(`🟢 DEBUG: Creating a new game in "${chatId}".`);
 
     // Ensure game is set up properly
     games[chatId] = {
@@ -28,7 +31,7 @@ async function startGame(m, sock) {
         dayCount: 1
     };
 
-    console.log(`Game started in ${chatId}, Game State:`, games[chatId]);
+    console.log(`✅ DEBUG: New game created in "${chatId}". Current games:`, games);
 
     sock.sendMessage(chatId, { text: "🐺 *Werewolf Game Started!* 🐺\nType wjoin to participate! You have 2 minutes to join." });
 
@@ -37,11 +40,10 @@ async function startGame(m, sock) {
         if (games[chatId]) {  // Ensure the game still exists
             assignRoles(chatId, sock);
         } else {
-            console.log(`Game in ${chatId} was deleted before role assignment.`);
+            console.log(`❌ DEBUG: Game in "${chatId}" was deleted before role assignment.`);
         }
     }, 120000);
 }
-
 
 // Command to join the game
 async function joinGame(m, sock) {
@@ -49,29 +51,34 @@ async function joinGame(m, sock) {
     let sender = m.key.participant || m.key.remoteJid;
     let senderName = m.pushName || sender.split('@')[0];
 
-    // 🚨 Prevent Group ID from joining as a player
+    console.log(`🟡 DEBUG: User "${senderName}" is trying to join game in "${chatId}".`);
+
+    // 🚨 Prevent Group ID from joining
     if (!sender.includes("@s.whatsapp.net")) {
-        console.log(`❌ Error: Group ID detected as player (${sender})`);
+        console.log(`❌ DEBUG: Group ID detected as player (${sender})`);
         return sock.sendMessage(chatId, { text: "Invalid player detected! Only individual users can join." });
     }
 
     if (!games[chatId]) {
+        console.log(`❌ DEBUG: No active game found for "${chatId}". Current games:`, games);
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
 
     if (games[chatId].rolesAssigned) {
+        console.log(`⚠️ DEBUG: Roles already assigned, cannot join.`);
         return sock.sendMessage(chatId, { text: "Role assignment has started. You can't join now!" });
     }
 
     if (games[chatId].players.includes(sender)) {
+        console.log(`⚠️ DEBUG: User "${senderName}" has already joined.`);
         return sock.sendMessage(chatId, { text: "You've already joined the game!" });
     }
 
-    console.log(`✅ User joining: ${senderName}, Current Players Before:`, games[chatId].players);
+    console.log(`✅ DEBUG: User "${senderName}" is added to the game. Players before:`, games[chatId].players);
 
     games[chatId].players = [...new Set([...games[chatId].players, sender])];
 
-    console.log(`✅ User joining: ${senderName}, Current Players After:`, games[chatId].players);
+    console.log(`✅ DEBUG: Updated player list:`, games[chatId].players);
 
     const playerCount = games[chatId].players.length;
     let responseMessage = `✅ @${senderName} has joined the game!`;
@@ -88,22 +95,24 @@ async function joinGame(m, sock) {
 // Function to assign roles and notify players
 async function assignRoles(chatId, sock) {
     if (!games[chatId]) {
-        console.log(`❌ Error: Game does not exist when trying to assign roles in ${chatId}`);
+        console.log(`❌ DEBUG: Game does not exist when trying to assign roles in "${chatId}".`);
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
 
     const game = games[chatId];
 
+    console.log(`🎭 DEBUG: Assigning roles in "${chatId}". Players:`, game.players);
+
     if (game.players.length < 3) {
         return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 3 required." });
     }
-
-    console.log(`🎭 Assigning roles in ${chatId}, Players:`, game.players);
 
     const assignedRoles = assignRandomRoles(game.players);
     game.roles = assignedRoles;
     game.rolesAssigned = true;
     game.status = "ongoing";
+
+    console.log(`✅ DEBUG: Roles assigned in "${chatId}".`, game.roles);
 
     game.players.forEach((player) => {
         sock.sendMessage(player, {
