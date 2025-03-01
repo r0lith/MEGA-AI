@@ -29,7 +29,7 @@ async function joinGame(m, sock) {
     let sender = m.key.participant || m.key.remoteJid;
 
     // Ensure sender is a valid user (not a group ID)
-    if (!sender.includes("@s.whatsapp.net")) {
+    if (!sender.includes("@s.whatsapp.net") || sender.includes("@g.us")) {
         return sock.sendMessage(chatId, { text: "Invalid player detected! Only individual users can join." });
     }
 
@@ -43,39 +43,37 @@ async function joinGame(m, sock) {
         return sock.sendMessage(chatId, { text: "You've already joined the game!" });
     }
 
-    console.log(`User joining: ${sender}, Current Players:`, games[chatId].players); // debugging
+    console.log(`User joining: ${sender}, Current Players:`, games[chatId].players);
     games[chatId].players.push(sender);
     const playerCount = games[chatId].players.length;
-    
+
     let responseMessage = `✅ @${sender.split('@')[0]} has joined the game!`;
     if (playerCount > 1) {
         responseMessage += `\n${playerCount} participants have joined.`;
     }
 
     sock.sendMessage(chatId, { text: responseMessage, mentions: [sender] });
-
 }
 
 // Function to assign roles and notify players
 async function assignRoles(chatId, sock) {
     const game = games[chatId];
-    if (!game || game.players.length < 5) {
-        delete games[chatId];
+    if (!game || game.players.length < 3) {
         return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 5 required." });
     }
-    
+
     const assignedRoles = assignRandomRoles(game.players);
     game.roles = assignedRoles;
     game.rolesAssigned = true;
     game.status = "ongoing";
-    
+
     game.players.forEach((player) => {
-        console.log(`Sending role info to ${player}:`, game.roles[player]); // Debug log
-    
-        sock.sendMessage(player, { 
-            text: `🎭 Your role: *${game.roles[player].name}*\n📜 ${game.roles[player].description}\n⚡ Abilities: ${game.roles[player].abilities.length > 0 ? game.roles[player].abilities.join(', ') : 'None'}` 
+        sock.sendMessage(player, {
+            text: `🎭 Your role: *${game.roles[player].name}*\n📜 ${game.roles[player].description}\n⚡ Abilities: ${game.roles[player].abilities.length > 0 ? game.roles[player].abilities.join(', ') : 'None'}`
         });
     });
+
+    sock.sendMessage(chatId, { text: `🎉 Roles assigned! Players: ${game.players.map(p => `@${p.split('@')[0]}`).join(', ')}`, mentions: game.players });
 }
 
 // Helper function to shuffle and assign roles
