@@ -12,7 +12,7 @@ function shuffleArray(array) {
 // Command to start the game
 async function startGame(m, sock) {
     const chatId = m.key.remoteJid;
-    
+
     if (games[chatId]) {
         return sock.sendMessage(chatId, { text: "A game is already in progress!" });
     }
@@ -28,32 +28,36 @@ async function startGame(m, sock) {
         dayCount: 1
     };
 
-    sock.sendMessage(chatId, { text: "🐺 *Werewolf Game Started!* 🐺\nType wjoin to participate! You have 2 minutes to join." });
-
     console.log(`Game started in ${chatId}, Game State:`, games[chatId]);
 
+    sock.sendMessage(chatId, { text: "🐺 *Werewolf Game Started!* 🐺\nType wjoin to participate! You have 2 minutes to join." });
+
     // Wait 2 minutes before assigning roles
-    setTimeout(() => assignRoles(chatId, sock), 120000);
+    setTimeout(() => {
+        if (games[chatId]) {  // Ensure the game still exists
+            assignRoles(chatId, sock);
+        } else {
+            console.log(`Game in ${chatId} was deleted before role assignment.`);
+        }
+    }, 120000);
 }
+
 
 // Command to join the game
 async function joinGame(m, sock) {
     const chatId = m.key.remoteJid;
     let sender = m.key.participant || m.key.remoteJid;
-    
-    // Fetch correct display name
     let senderName = m.pushName || sender.split('@')[0];
 
-    if (!sender.includes("@s.whatsapp.net") || sender.includes("@g.us")) {
-        return sock.sendMessage(chatId, { text: "Invalid player detected! Only individual users can join." });
-    }
-
     if (!games[chatId]) {
+        console.log(`Error: Game does not exist for ${chatId} when ${sender} tried to join.`);
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
+
     if (games[chatId].rolesAssigned) {
         return sock.sendMessage(chatId, { text: "Role assignment has started. You can't join now!" });
     }
+
     if (games[chatId].players.includes(sender)) {
         return sock.sendMessage(chatId, { text: "You've already joined the game!" });
     }
@@ -74,17 +78,21 @@ async function joinGame(m, sock) {
 }
 
 
+
 // Function to assign roles and notify players
 async function assignRoles(chatId, sock) {
-    const game = games[chatId];
-
-    if (!game) {
+    if (!games[chatId]) {
+        console.log(`Error: Game does not exist when trying to assign roles in ${chatId}`);
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
 
-    if (game.players.length < 3) {
-        return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 5 required." });
+    const game = games[chatId];
+
+    if (game.players.length < 3) { // Minimum 3 players for balance
+        return sock.sendMessage(chatId, { text: "Not enough players to start! Minimum 3 required." });
     }
+
+    console.log(`Assigning roles in ${chatId}, Players:`, game.players);
 
     const assignedRoles = assignRandomRoles(game.players);
     game.roles = assignedRoles;
@@ -99,7 +107,6 @@ async function assignRoles(chatId, sock) {
 
     sock.sendMessage(chatId, { text: `🎉 Roles assigned! Players: ${game.players.map(p => `@${p.split('@')[0]}`).join(', ')}`, mentions: game.players });
 }
-
 // Helper function to shuffle and assign roles
 function assignRandomRoles(players) {
     const roleKeys = Object.keys(roles);
