@@ -10,7 +10,7 @@
         "plugins": "plugins"
     },
     "engines": {
-        "node": ">=20.0.0"
+        "node": "20.0.0"
     },
     "scripts": {
         "start": "node index.js",
@@ -46,7 +46,7 @@
         "@hapi/boom": "^10.0.1",
         "@shineiichijo/marika": "^3.0.1",
         "@vitalets/google-translate-api": "^9.2.0",
-        "@whiskeysockets/baileys": "^6.6.0",
+        "@whiskeysockets/baileys": "^6.7.15",
         "@xct007/frieren-scraper": "*",
         "acrcloud": "^1.4.0",
         "awesome-phonenumber": "^3.4.0",
