@@ -1,5 +1,6 @@
 import roles from "./wg-roles.js";
 import { getGame, updateGameState, removeGame } from "./wg-gameState.js";
+import { nextPhase } from "./wg-events.js"; // Import nextPhase function
 
 // Function to shuffle an array (used for randomizing roles)
 function shuffleArray(array) {
@@ -118,6 +119,9 @@ async function assignRoles(chatId, sender, args, sock, m) {
         text: `🎉 Roles assigned! Players: ${[...new Set(game.players.map(p => `@${p.split('@')[0]}`))].join(', ')}`, 
         mentions: [...new Set(game.players)] 
     });
+
+    // Trigger the next phase after roles are assigned
+    nextPhase(chatId, sock);
 }
 
 // Helper function to shuffle and assign roles
