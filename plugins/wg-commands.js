@@ -1,4 +1,4 @@
-import { startGame, joinGame, assignRoles } from "./wg-game.js";
+import { startGame, joinGame } from "./wg-game.js";
 import { startVotingPhase, castVote, tallyVotes } from "./wg-voting.js";
 import { processNightActions } from "./wg-actions.js";
 
@@ -6,7 +6,6 @@ import { processNightActions } from "./wg-actions.js";
 const commands = {
     "wstart": startGame,
     "wjoin": joinGame,
-    "wroles": assignRoles,
     "wvote": castVote,
     "wvotes": tallyVotes,
     "wnight": processNightActions,

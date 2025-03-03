@@ -140,10 +140,12 @@ async function handleVoteCommand(m, sock) {
 
 export { startVotingPhase, castVote, tallyVotes, handleVoteCommand };
 
-// Add listener to handle "wvote @user" command
-handler.all = async function (m) {
-    if (/^wvote @\d+$/i.test(m.text)) {
-        await handleVoteCommand(m, this);
+// Define the handler object
+const handler = {
+    all: async function (m) {
+        if (/^wvote @\d+$/i.test(m.text)) {
+            await handleVoteCommand(m, this);
+        }
+        return !0;
     }
-    return !0;
 };
