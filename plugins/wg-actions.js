@@ -13,6 +13,11 @@ async function processNightActions(chatId, sender, args, sock, m) {
         const convertedPlayers = new Set();
         const dousedPlayers = new Set();
 
+        // Ensure game.actions is defined
+        if (!game.actions) {
+            game.actions = {};
+        }
+
         // Process Guardian Angel protection first
         for (const player of game.players) {
             if (game.actions[player]?.action === "protect") {
