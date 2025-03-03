@@ -1,5 +1,5 @@
-import roles from "./wg-roles.js"; // ✅ ES module import
-const games = {}; // Store active games
+import roles from "./wg-roles.js";
+import { getGame, updateGameState, removeGame } from "./wg-gameState.js";
 
 // Function to shuffle an array (used for randomizing roles)
 function shuffleArray(array) {
@@ -10,17 +10,17 @@ function shuffleArray(array) {
 }
 
 // Command to start the game
-async function startGame(m, sock) {
-    const chatId = m.key.remoteJid;
+async function startGame(chatId, sender, args, sock, m) {
+    let game = getGame(chatId);
 
-    if (games[chatId]) {
+    if (game) {
         console.log(`⚠️ DEBUG: Game already exists in "${chatId}".`);
         return sock.sendMessage(chatId, { text: "A game is already in progress!" });
     }
 
     console.log(`🟢 DEBUG: Creating a new game in "${chatId}".`);
 
-    games[chatId] = {
+    game = {
         players: [],
         rolesAssigned: false,
         status: "waiting",
@@ -29,59 +29,54 @@ async function startGame(m, sock) {
         werewolfTargets: [],
         dayCount: 1
     };
+    updateGameState(chatId, game);
 
-    console.log(`✅ DEBUG: New game created in "${chatId}". Current games:`, JSON.stringify(games, null, 2));
+    console.log(`✅ DEBUG: New game created in "${chatId}".`);
 
     sock.sendMessage(chatId, { text: "🐺 *Werewolf Game Started!* 🐺\nType wjoin to participate! You have 2 minutes to join." });
 
     setTimeout(() => {
-        if (games[chatId]) {  
-            assignRoles(chatId, sock);
+        if (getGame(chatId)) {
+            assignRoles(chatId, sender, args, sock, m);
         } else {
             console.log(`❌ DEBUG: Game in "${chatId}" was deleted before role assignment.`);
         }
     }, 120000);
 }
 
-
 // Command to join the game
-async function joinGame(m, sock) {
-    const chatId = m.key.remoteJid;
-    let sender = m.key.participant || m.key.remoteJid;
+async function joinGame(chatId, sender, args, sock, m) {
     let senderName = m.pushName || sender.split('@')[0];
+    let game = getGame(chatId);
 
     console.log(`🟡 DEBUG: User "${senderName}" is trying to join game in "${chatId}".`);
 
-    // 🚨 Prevent Group ID from joining
     if (!sender.includes("@s.whatsapp.net")) {
         console.log(`❌ DEBUG: Group ID detected as player (${sender})`);
         return sock.sendMessage(chatId, { text: "Invalid player detected! Only individual users can join." });
     }
 
-    if (!games[chatId]) {
+    if (!game) {
         console.log(`❌ DEBUG: No active game found for "${chatId}".`);
-        console.log(`🟠 DEBUG: All active games before error:`, JSON.stringify(games, null, 2));
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
-    
 
-    if (games[chatId].rolesAssigned) {
+    if (game.rolesAssigned) {
         console.log(`⚠️ DEBUG: Roles already assigned, cannot join.`);
         return sock.sendMessage(chatId, { text: "Role assignment has started. You can't join now!" });
     }
 
-    if (games[chatId].players.includes(sender)) {
+    if (game.players.includes(sender)) {
         console.log(`⚠️ DEBUG: User "${senderName}" has already joined.`);
         return sock.sendMessage(chatId, { text: "You've already joined the game!" });
     }
 
-    console.log(`✅ DEBUG: User "${senderName}" is added to the game. Players before:`, games[chatId].players);
+    game.players = [...new Set([...game.players, sender])];
+    updateGameState(chatId, game);
 
-    games[chatId].players = [...new Set([...games[chatId].players, sender])];
+    console.log(`✅ DEBUG: Updated player list:`, game.players);
 
-    console.log(`✅ DEBUG: Updated player list:`, games[chatId].players);
-
-    const playerCount = games[chatId].players.length;
+    const playerCount = game.players.length;
     let responseMessage = `✅ @${senderName} has joined the game!`;
     if (playerCount > 1) {
         responseMessage += `\n${playerCount} participants have joined.`;
@@ -90,17 +85,14 @@ async function joinGame(m, sock) {
     sock.sendMessage(chatId, { text: responseMessage, mentions: [sender] });
 }
 
-
-
-
 // Function to assign roles and notify players
-async function assignRoles(chatId, sock) {
-    if (!games[chatId]) {
+async function assignRoles(chatId, sender, args, sock, m) {
+    let game = getGame(chatId);
+
+    if (!game) {
         console.log(`❌ DEBUG: Game does not exist when trying to assign roles in "${chatId}".`);
         return sock.sendMessage(chatId, { text: "No active game! Type /startgame to begin." });
     }
-
-    const game = games[chatId];
 
     console.log(`🎭 DEBUG: Assigning roles in "${chatId}". Players:`, game.players);
 
@@ -112,6 +104,7 @@ async function assignRoles(chatId, sock) {
     game.roles = assignedRoles;
     game.rolesAssigned = true;
     game.status = "ongoing";
+    updateGameState(chatId, game);
 
     console.log(`✅ DEBUG: Roles assigned in "${chatId}".`, game.roles);
 
@@ -135,22 +128,17 @@ function assignRandomRoles(players) {
     let assignedRoles = {};
     players.forEach((player, index) => {
         const roleKey = roleKeys[index % roleKeys.length];
-
-        // Debugging: Log role assignment
-        console.log(`Assigning role: ${roleKey}`, roles[roleKey]);
-
         assignedRoles[player] = {
             name: roleKey,
-            ...roles[roleKey] // Merge full role details
+            ...roles[roleKey] 
         };
     });
-
     return assignedRoles;
 }
 
 // Handler to start the game
 let handler = async (m, { conn }) => {
-    await startGame(m, conn);
+    await startGame(m.key.remoteJid, m.key.participant || m.key.remoteJid, [], conn, m);
 }
 
 handler.help = ['wstart'];
@@ -163,7 +151,7 @@ export default handler;
 // Listener for "wjoin" command
 handler.all = async function (m) {
     if (/^wjoin$/i.test(m.text)) {
-        await joinGame(m, this);
+        await joinGame(m.key.remoteJid, m.key.participant || m.key.remoteJid, [], this, m);
     }
     return !0;
 }
