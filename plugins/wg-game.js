@@ -155,3 +155,6 @@ handler.all = async function (m) {
     }
     return !0;
 }
+
+// Export the functions
+export { startGame, joinGame };
