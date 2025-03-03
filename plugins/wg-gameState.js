@@ -1,8 +1,15 @@
 import { makeInMemoryStore } from "@whiskeysockets/baileys";
 import fs from "fs";
+import path from "path";
 
 const store = makeInMemoryStore({});
 const FILE_PATH = "./data/baileys_store.json";
+const DIR_PATH = path.dirname(FILE_PATH);
+
+// Ensure the data directory exists
+if (!fs.existsSync(DIR_PATH)) {
+    fs.mkdirSync(DIR_PATH, { recursive: true });
+}
 
 // Load stored data when the bot starts
 if (fs.existsSync(FILE_PATH)) {
