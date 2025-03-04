@@ -139,13 +139,13 @@ let handler = async (m, { conn }) => {
     const sender = m.key.participant || m.key.remoteJid;
     const messageText = m.text.trim();
     
-    const match = messageText.match(/^wvote @(\w+)/);
+    const match = messageText.match(/^!wvote\s+@(\d+)/);
     if (!match) {
         console.log(`❌ DEBUG: Invalid vote command format: ${messageText}`);
         return;
     }
     
-    const mentionedJid = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
+    const mentionedJid = m.message.extendedTextMessage.contextInfo?.mentionedJid?.[0];
     if (!mentionedJid) {
         console.log(`❌ DEBUG: No user mentioned in the vote command: ${messageText}`);
         return;
