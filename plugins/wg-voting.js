@@ -26,11 +26,11 @@ async function castVote(chatId, sender, args, sock, m) {
         return sock.sendMessage(chatId, { text: "No voting phase is active right now." });
     }
 
-    const targetUsername = args[0];
-    const target = game.players.find(player => player.includes(targetUsername));
+    const targetJid = args[0];
+    const target = game.players.find(player => player === targetJid);
     if (!target) {
-        console.log(`⚠️ DEBUG: Invalid vote. No player found with username: ${targetUsername}`);
-        return sock.sendMessage(chatId, { text: `⚠️ Invalid vote. The player @${targetUsername} is not in the game.` });
+        console.log(`⚠️ DEBUG: Invalid vote. No player found with JID: ${targetJid}`);
+        return sock.sendMessage(chatId, { text: `⚠️ Invalid vote. The player @${targetJid.split('@')[0]} is not in the game.` });
     }
 
     if (votedPlayers[chatId].has(sender)) {
@@ -145,9 +145,14 @@ async function handleVoteCommand(m, sock) {
         return;
     }
     
-    const targetUsername = match[1];
-    console.log(`🟢 DEBUG: Handling vote command from ${sender} for @${targetUsername}`);
-    await castVote(chatId, sender, [targetUsername], sock, m);
+    const mentionedJid = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
+    if (!mentionedJid) {
+        console.log(`❌ DEBUG: No user mentioned in the vote command: ${messageText}`);
+        return;
+    }
+
+    console.log(`🟢 DEBUG: Handling vote command from ${sender} for @${mentionedJid}`);
+    await castVote(chatId, sender, [mentionedJid], sock, m);
 }
 
 export { startVotingPhase, castVote, tallyVotes, handleVoteCommand };
