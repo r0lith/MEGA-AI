@@ -54,7 +54,7 @@ async function joinGame(chatId, sender, args, sock, m) {
 
     if (!sender.includes("@s.whatsapp.net")) {
         console.log(`❌ DEBUG: Group ID detected as player (${sender})`);
-        return sock.sendMessage(chatId, { text: "Invalid player detected! Only individual users can join." });
+        return; // Silently ignore group IDs
     }
 
     if (!game) {
