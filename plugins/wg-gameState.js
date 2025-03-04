@@ -29,19 +29,24 @@ setInterval(() => {
 
 // Function to get active game state
 function getGame(chatId) {
-    return store.games?.[chatId] || null;
+    console.log(`🔍 DEBUG: Retrieving game state for chatId: ${chatId}`);
+    const game = store.games?.[chatId] || null;
+    console.log(`🔍 DEBUG: Retrieved game state:`, game);
+    return game;
 }
 
 // Function to update game state
 function updateGameState(chatId, gameData) {
     if (!store.games) store.games = {};
     store.games[chatId] = gameData;
+    console.log(`🔄 DEBUG: Updated game state for chatId: ${chatId}`, gameData);
 }
 
 // Function to remove a game when it ends
 function removeGame(chatId) {
     if (store.games) {
         delete store.games[chatId];
+        console.log(`❌ DEBUG: Removed game state for chatId: ${chatId}`);
     }
 }
 
