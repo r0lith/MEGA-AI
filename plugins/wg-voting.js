@@ -14,7 +14,7 @@ async function startVotingPhase(chatId, sender, args, sock, m) {
     sock.sendMessage(chatId, { text: "☀️ Daytime has begun! You have 2 minutes to discuss before voting begins." });
     
     setTimeout(() => {
-        sock.sendMessage(chatId, { text: "🗳️ Voting has started! Type wvote @player to vote." });
+        sock.sendMessage(chatId, { text: "🗳️ Voting has started! Type !wvote @player to vote." });
         setTimeout(() => tallyVotes(chatId, sock, game.players.length), 120000); // 2-minute voting period
     }, 120000); // 2-minute discussion period
 } 
@@ -133,8 +133,8 @@ function checkWinCondition(chatId, sock, game) {
     }
 }
 
-// Listener for "wvote @user"
-async function handleVoteCommand(m, sock) {
+// Handler for "wvote @user" command
+let handler = async (m, { conn }) => {
     const chatId = m.key.remoteJid;
     const sender = m.key.participant || m.key.remoteJid;
     const messageText = m.text.trim();
@@ -152,17 +152,14 @@ async function handleVoteCommand(m, sock) {
     }
 
     console.log(`🟢 DEBUG: Handling vote command from ${sender} for @${mentionedJid}`);
-    await castVote(chatId, sender, [mentionedJid], sock, m);
+    await castVote(chatId, sender, [mentionedJid], conn, m);
 }
 
-export { startVotingPhase, castVote, tallyVotes, handleVoteCommand };
+handler.help = ['wvote @user'];
+handler.tags = ['game'];
+handler.command = ['wvote'];
+handler.group = true;
 
-// Define the handler object
-const handler = {
-    all: async function (m) {
-        if (/^wvote @\w+$/i.test(m.text)) {
-            await handleVoteCommand(m, this);
-        }
-        return !0;
-    }
-};
+export default handler;
+
+export { startVotingPhase, castVote, tallyVotes, checkWinCondition };
