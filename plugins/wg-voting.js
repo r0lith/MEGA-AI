@@ -25,17 +25,19 @@ async function castVote(chatId, sender, args, sock, m) {
         console.log(`❌ DEBUG: No voting phase is active or no game found for chatId: ${chatId}`);
         return sock.sendMessage(chatId, { text: "No voting phase is active right now." });
     }
-    
-    const target = args[0] + "@s.whatsapp.net";
+
+    const targetUsername = args[0];
+    const target = game.players.find(player => player.includes(targetUsername));
+    if (!target) {
+        console.log(`⚠️ DEBUG: Invalid vote. No player found with username: ${targetUsername}`);
+        return sock.sendMessage(chatId, { text: `⚠️ Invalid vote. The player @${targetUsername} is not in the game.` });
+    }
+
     if (votedPlayers[chatId].has(sender)) {
         console.log(`⚠️ DEBUG: ${sender} has already voted.`);
         return sock.sendMessage(chatId, { text: "⚠️ You have already voted. Wait for the next voting phase." });
     }
-    if (!game.players.includes(target)) {
-        console.log(`⚠️ DEBUG: Invalid vote. ${target} is not in the game.`);
-        return sock.sendMessage(chatId, { text: "⚠️ Invalid vote. The player you are voting for is not in the game." });
-    }
-    
+
     voteCounts[chatId][sender] = target;
     votedPlayers[chatId].add(sender);
     console.log(`✅ DEBUG: ${sender} voted for ${target}`);
@@ -137,15 +139,15 @@ async function handleVoteCommand(m, sock) {
     const sender = m.key.participant || m.key.remoteJid;
     const messageText = m.text.trim();
     
-    const match = messageText.match(/^wvote @(\d+)/);
+    const match = messageText.match(/^wvote @(\w+)/);
     if (!match) {
         console.log(`❌ DEBUG: Invalid vote command format: ${messageText}`);
         return;
     }
     
-    const target = match[1] + "@s.whatsapp.net";
-    console.log(`🟢 DEBUG: Handling vote command from ${sender} for ${target}`);
-    await castVote(chatId, sender, [target], sock, m);
+    const targetUsername = match[1];
+    console.log(`🟢 DEBUG: Handling vote command from ${sender} for @${targetUsername}`);
+    await castVote(chatId, sender, [targetUsername], sock, m);
 }
 
 export { startVotingPhase, castVote, tallyVotes, handleVoteCommand };
@@ -153,7 +155,7 @@ export { startVotingPhase, castVote, tallyVotes, handleVoteCommand };
 // Define the handler object
 const handler = {
     all: async function (m) {
-        if (/^wvote @\d+$/i.test(m.text)) {
+        if (/^wvote @\w+$/i.test(m.text)) {
             await handleVoteCommand(m, this);
         }
         return !0;
