@@ -21,18 +21,24 @@ async function startVotingPhase(chatId, sender, args, sock, m) {
 
 async function castVote(chatId, sender, args, sock, m) {
     const game = getGame(chatId);
-    if (!voteCounts[chatId] || !game) return sock.sendMessage(chatId, { text: "No voting phase is active right now." });
+    if (!voteCounts[chatId] || !game) {
+        console.log(`❌ DEBUG: No voting phase is active or no game found for chatId: ${chatId}`);
+        return sock.sendMessage(chatId, { text: "No voting phase is active right now." });
+    }
     
     const target = args[0] + "@s.whatsapp.net";
     if (votedPlayers[chatId].has(sender)) {
+        console.log(`⚠️ DEBUG: ${sender} has already voted.`);
         return sock.sendMessage(chatId, { text: "⚠️ You have already voted. Wait for the next voting phase." });
     }
     if (!game.players.includes(target)) {
+        console.log(`⚠️ DEBUG: Invalid vote. ${target} is not in the game.`);
         return sock.sendMessage(chatId, { text: "⚠️ Invalid vote. The player you are voting for is not in the game." });
     }
     
     voteCounts[chatId][sender] = target;
     votedPlayers[chatId].add(sender);
+    console.log(`✅ DEBUG: ${sender} voted for ${target}`);
     sock.sendMessage(chatId, { text: `✅ @${sender.split('@')[0]} voted for @${target.split('@')[0]}.` });
 }
 
@@ -132,9 +138,13 @@ async function handleVoteCommand(m, sock) {
     const messageText = m.text.trim();
     
     const match = messageText.match(/^wvote @(\d+)/);
-    if (!match) return;
+    if (!match) {
+        console.log(`❌ DEBUG: Invalid vote command format: ${messageText}`);
+        return;
+    }
     
     const target = match[1] + "@s.whatsapp.net";
+    console.log(`🟢 DEBUG: Handling vote command from ${sender} for ${target}`);
     await castVote(chatId, sender, [target], sock, m);
 }
 
