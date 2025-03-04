@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 
 const store = makeInMemoryStore({});
+store.games = {}; // Ensure the games property is initialized
+
 const FILE_PATH = "./data/baileys_store.json";
 const DIR_PATH = path.dirname(FILE_PATH);
 
@@ -14,6 +16,10 @@ if (!fs.existsSync(DIR_PATH)) {
 // Load stored data when the bot starts
 if (fs.existsSync(FILE_PATH)) {
     store.readFromFile(FILE_PATH);
+    // Ensure the games property is initialized after reading from file
+    if (!store.games) {
+        store.games = {};
+    }
 }
 
 // Save data every 10 seconds
