@@ -21,13 +21,20 @@ let handler = async (m, { text, conn, usedPrefix, command }) => {
       let response = await fetch(guru1)
       let data = await response.json()
       let result = data.response.response
+      let mediaUrl = data.response.mediaUrl // Assuming the API provides a media URL
 
       if (!result) {
         throw new Error('No valid JSON response from the first API')
       }
 
-      // Send a simple message instead of a button
+      // Send text response
       await conn.sendMessage(m.chat, { text: result }, { quoted: m })
+
+      // Send media if available
+      if (mediaUrl) {
+        await conn.sendMessage(m.chat, { image: { url: mediaUrl } }, { quoted: m }) // Change 'image' to 'video' or 'audio' if needed
+      }
+
       m.react(done)
     } catch (error) {
       console.error('Error from the first API:', error)
@@ -37,9 +44,16 @@ let handler = async (m, { text, conn, usedPrefix, command }) => {
       let response = await fetch(guru2)
       let data = await response.json()
       let result = data.completion
+      let mediaUrl = data.mediaUrl // Assuming the second API also provides a media URL
 
-      // Send a simple message instead of a button
+      // Send text response
       await conn.sendMessage(m.chat, { text: result }, { quoted: m })
+
+      // Send media if available
+      if (mediaUrl) {
+        await conn.sendMessage(m.chat, { image: { url: mediaUrl } }, { quoted: m }) // Change 'image' to 'video' or 'audio' if needed
+      }
+
       m.react(done)
     }
   } catch (error) {
