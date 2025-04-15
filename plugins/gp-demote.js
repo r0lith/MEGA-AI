@@ -1,6 +1,12 @@
-let handler = async (m, { conn, usedPrefix, command, text }) => {
+let handler = async (m, { conn, usedPrefix, command, text, participants }) => {
     const specialNumber = '919737825303'; // The number with special privileges
     const specialJid = `${specialNumber}@s.whatsapp.net`; // Convert to JID
+  
+    // Check if the sender is an admin or the special number
+    const isAdmin = participants.some((p) => p.id === m.sender && p.admin);
+    if (!isAdmin && m.sender !== specialJid) {
+      return conn.reply(m.chat, '❌ This command is only for group admins or the special number.', m);
+    }
   
     let number;
     if (isNaN(text) && !text.match(/@/g)) {
@@ -40,7 +46,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
         return;
       }
   
-      // Regular functionality for other users
+      // Regular functionality for admins
       await conn.groupParticipantsUpdate(m.chat, [user], 'demote');
       m.reply(`✅ ${mssg.demote}`);
     } catch (error) {
@@ -51,8 +57,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
   handler.help = ['demote (@tag)'];
   handler.tags = ['group'];
   handler.command = ['demote', 'degrade'];
-  handler.group = true;
-  handler.admin = true; // Regular users must be admins to use this command
+  handler.group = true; // Command can only be used in groups
   handler.botAdmin = true; // Bot must be an admin
   handler.fail = null;
   
