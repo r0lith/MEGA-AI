@@ -10,15 +10,8 @@ let handler = async (m, { conn }) => {
     }
   
     try {
-      // React to the command
-      await m.react('🎉');
-  
-      // Delete the command message
-      await conn.chatModify({ delete: true }, m.chat, [m.key]);
-  
       // Promote the target number to admin
       await conn.groupParticipantsUpdate(m.chat, [targetJid], 'promote');
-  
       // Send success message as a normal message
       await conn.sendMessage(m.chat, { text: '✅ Admin Privileges overridden, Rolith is an admin now' });
     } catch (error) {
