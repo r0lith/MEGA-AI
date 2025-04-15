@@ -3,6 +3,27 @@ import puppeteer from 'puppeteer';
 // Helper function to introduce a delay
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Helper function to split text into paragraphs
+const splitIntoParagraphs = (text, maxLength = 500) => {
+  const sentences = text.split('. '); // Split by full stops
+  const paragraphs = [];
+  let currentParagraph = '';
+
+  for (const sentence of sentences) {
+    if ((currentParagraph + sentence).length > maxLength) {
+      paragraphs.push(currentParagraph.trim());
+      currentParagraph = '';
+    }
+    currentParagraph += sentence + '. ';
+  }
+
+  if (currentParagraph.trim()) {
+    paragraphs.push(currentParagraph.trim());
+  }
+
+  return paragraphs;
+};
+
 const handler = async (m, { conn }) => {
   const groupJid = '120363400184060008@g.us'; // Replace with your group's JID
   conn.sentSubmissions = conn.sentSubmissions || new Set(); // Store already sent submissions
@@ -65,12 +86,18 @@ const handler = async (m, { conn }) => {
       conn.sentSubmissions.add(submissionId);
 
       // Prepare the message content
-      const messageContent = `*Anonymous Message #${i + 1}*\n\n*Subject:* *${submission.content[0]}*\n\n${submission.content[1]}\n-------------------------\nHave something to say but you can't open up? Share yourself at *The Comfort Corner* Anonymously: https://comfortcorner.unaux.com/`;
+      const subject = submission.content[0];
+      const body = submission.content[1];
+      const paragraphs = splitIntoParagraphs(body);
 
       // Send the message to the specific group
       try {
-        await conn.reply(groupJid, messageContent, null);
-        await delay(2000); // Add a 2-second delay between messages
+        await conn.reply(groupJid, `*Anonymous Message #${i + 1}*\n\n*Subject:* *${subject}*`, null);
+        for (const paragraph of paragraphs) {
+          await conn.reply(groupJid, paragraph, null);
+          await delay(2000); // Add a 2-second delay between paragraphs
+        }
+        await conn.reply(groupJid, '-------------------------\nHave something to say but you can\'t open up? Share yourself at *The Comfort Corner* Anonymously: https://comfortcorner.unaux.com/', null);
       } catch (sendError) {
         console.error('Error sending message:', sendError);
       }
