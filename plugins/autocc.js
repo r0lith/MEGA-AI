@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 
 const handler = async (m, { conn }) => {
-  const groupJid = 'YOUR_GROUP_JID_HERE'; // Replace with your group's JID
+  const groupJid = '120363400184060008@g.us'; // Replace with your group's JID
   conn.sentSubmissions = conn.sentSubmissions || new Set(); // Store already sent submissions
 
   await conn.reply(m.chat, 'Fetching submissions, please wait...', m);
