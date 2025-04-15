@@ -90,14 +90,17 @@ const handler = async (m, { conn }) => {
       const body = submission.content[1];
       const paragraphs = splitIntoParagraphs(body);
 
+      // Combine paragraphs into a single message
+      const combinedMessage = paragraphs.join('\n\n');
+
       // Send the message to the specific group
       try {
-        await conn.reply(groupJid, `*Anonymous Message #${i + 1}*\n\n*Subject:* *${subject}*`, null);
-        for (const paragraph of paragraphs) {
-          await conn.reply(groupJid, paragraph, null);
-          await delay(2000); // Add a 2-second delay between paragraphs
-        }
-        await conn.reply(groupJid, '-------------------------\nHave something to say but you can\'t open up? Share yourself at *The Comfort Corner* Anonymously: https://comfortcorner.unaux.com/', null);
+        await conn.reply(
+          groupJid,
+          `*Anonymous Message #${i + 1}*\n\n*Subject:* *${subject}*\n\n${combinedMessage}\n-------------------------\nHave something to say but you can't open up? Share yourself at *The Comfort Corner* Anonymously: https://comfortcorner.unaux.com/`,
+          null
+        );
+        await delay(2000); // Add a 2-second delay between messages
       } catch (sendError) {
         console.error('Error sending message:', sendError);
       }
