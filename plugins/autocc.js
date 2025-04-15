@@ -79,6 +79,7 @@ const handler = async (m, { conn }) => {
 
       // Skip if this submission has already been sent
       if (conn.sentSubmissions.has(submissionId)) {
+        console.log(`Skipping already sent submission ID: ${submissionId}`);
         continue;
       }
 
