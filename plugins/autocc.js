@@ -1,5 +1,8 @@
 import puppeteer from 'puppeteer';
 
+// Helper function to introduce a delay
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const handler = async (m, { conn }) => {
   const groupJid = '120363400184060008@g.us'; // Replace with your group's JID
   conn.sentSubmissions = conn.sentSubmissions || new Set(); // Store already sent submissions
@@ -60,7 +63,12 @@ const handler = async (m, { conn }) => {
       const messageContent = `*Anonymous Message #${i + 1}*\n\n*Subject:* *${submission.content[0]}*\n\n${submission.content[1]}\n-------------------------\nHave something to say but you can't open up? Share yourself at *The Comfort Corner* Anonymously: https://comfortcorner.unaux.com/`;
 
       // Send the message to the specific group
-      await conn.reply(groupJid, messageContent, null);
+      try {
+        await conn.reply(groupJid, messageContent, null);
+        await delay(2000); // Add a 2-second delay between messages
+      } catch (sendError) {
+        console.error('Error sending message:', sendError);
+      }
     }
 
     await conn.reply(m.chat, 'All new submissions have been sent to the group.', m);
