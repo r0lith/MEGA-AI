@@ -16,6 +16,11 @@ const handler = async (m, { conn }) => {
     });
     const page = await browser.newPage();
 
+    // Set the request headers to ensure UTF-8 encoding
+    await page.setExtraHTTPHeaders({
+      'Content-Type': 'application/json; charset=utf-8',
+    });
+
     // Navigate to the URL and wait for the JavaScript challenge to complete
     const url = 'https://comfortcorner.unaux.com/wp-json/cf7-views/v1/get-data';
     await page.goto(url, { waitUntil: 'networkidle2' });
