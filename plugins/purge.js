@@ -5,8 +5,9 @@ let handler = async (m, { conn, args }) => {
     if (count < 1) throw `✳️ The number of messages to delete must be at least 1.`;
 
     try {
-        let messages = await conn.fetchMessages(m.chat, { limit: count + 1 }); // Fetch messages, including the command message
-        for (let msg of messages.slice(1)) { // Skip the command message itself
+        // Use loadMessages instead of fetchMessages
+        let messages = await conn.loadMessages(m.chat, count + 1); // Fetch messages, including the command message
+        for (let msg of messages.messages.slice(1)) { // Skip the command message itself
             let deleteOptions = {
                 remoteJid: m.chat,
                 fromMe: msg.key.fromMe,
