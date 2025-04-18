@@ -24,14 +24,20 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     } else {
       who = m.chat;
     }
-
+    
     console.log('Target JID:', who);
-
+    
+    // Check if the user exists in the database, and add them if missing
+    if (!global.db.data.users[who]) {
+      console.log(`User ${who} not found in the database. Adding them now.`);
+      global.db.data.users[who] = { banned: false }; // Initialize user with default properties
+    }
+    
     let user = global.db.data.users[who];
-    if (!who || !user) throw `✳️ User not found in the database. Make sure the number is correct and includes the country code.`;
-
     let users = global.db.data.users;
     users[who].banned = true;
+    console.log(`User ${who} has been banned.`);
+    
     conn.reply(
       m.chat,
       `✅ BANNED\n\n───────────\n@${who.split`@`[0]} you will no longer be able to use my commands.`,
