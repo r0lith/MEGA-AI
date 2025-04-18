@@ -334,7 +334,7 @@ export async function handler(chatUpdate) {
           
           // Check if the user is banned
           if (name != 'owner-unbanuser.js' && user?.banned) {
-            return conn.reply(m.chat, '❌ You have been banned from using commands. Please contact the bot owner if you think this is a mistake.', m)
+            return conn.reply(m.chat, '❌ You have been banned from using commands.', m)
           }
         }
         if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
