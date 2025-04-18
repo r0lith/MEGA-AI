@@ -326,8 +326,16 @@ export async function handler(chatUpdate) {
         if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
           let chat = global.db.data.chats[m.chat]
           let user = global.db.data.users[m.sender]
-          if (name != 'owner-unbanchat.js' && chat?.isBanned) return // Except this
-          if (name != 'owner-unbanuser.js' && user?.banned) return
+          
+          // Check if the chat is banned
+          if (name != 'owner-unbanchat.js' && chat?.isBanned) {
+            return conn.reply(m.chat, '❌ This chat has been banned from using commands.', m)
+          }
+          
+          // Check if the user is banned
+          if (name != 'owner-unbanuser.js' && user?.banned) {
+            return conn.reply(m.chat, '❌ You have been banned from using commands. Please contact the bot owner if you think this is a mistake.', m)
+          }
         }
         if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
           // Both Owner
