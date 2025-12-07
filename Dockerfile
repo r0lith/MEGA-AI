@@ -1,6 +1,6 @@
 FROM quay.io/qasimtech/mega-bot:latest
 
-RUN git clone https://github.com/BobbyX208/MEGA-AI /root/mega-ai && \
+RUN git clone https://github.com/GlobalTechInfo/MEGA-AI /root/mega-ai && \
     rm -rf /root/mega-ai/.git
 
 WORKDIR /root/mega-ai
