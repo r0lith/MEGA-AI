@@ -3,6 +3,7 @@
   "version": "5.0.0",
   "description": "WhatsApp Bot",
   "main": "index.js",
+  "type": "commonjs",
   "directories": {"lib": "lib","data": "data","plugins": "plugins"},
   "scripts": {
   "start": "node index.js",
