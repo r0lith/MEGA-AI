@@ -1,9 +1,9 @@
 const settings = {
-  packname: 'Mega Ai',
+  packname: 'Riruru',
   author: '‎',
-  botName: "MEGA-AI",
-  botOwner: 'Qasim Ali', // Your name
-  ownerNumber: '923051391007', //Set your number here without + symbol, just add country code & number without any space
+  botName: "Riruru",
+  botOwner: 'Rolith', // Your name
+  ownerNumber: '12482586072', //Set your number here without + symbol, just add country code & number without any space
   giphyApiKey: 'qnl7ssQChTdPjsKta2Ax2LMaGXz303tq',
   listv: ['¤','☞','⎆','⫹⫺','➩','➢','➣','➤','✦','✧','○','◇'],
   commandMode: "public",
