@@ -178,10 +178,13 @@ const channelInfo = {
 
 async function handleMessages(sock, messageUpdate, printLog) {
     try {
-   const { messages, type } = messageUpdate;
+ console.log('HANDLEMESSAGES ENTRY'); // 👈 ADD THIS LINE
 
-const message = messages[0];
-if (!message?.message) return;
+    const { messages, type } = messageUpdate;
+    
+
+    const message = messages[0];
+    if (!message?.message) return;
 
 // 🔥 LOG EVERYTHING FIRST
 const m = sock.serializeM(message)
