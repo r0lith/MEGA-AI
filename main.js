@@ -178,13 +178,17 @@ const channelInfo = {
 
 async function handleMessages(sock, messageUpdate, printLog) {
     try {
-        const { messages, type } = messageUpdate;
-        if (type !== 'notify') return;
+   const { messages, type } = messageUpdate;
 
-        const message = messages[0];
-        if (!message?.message) return;
+const message = messages[0];
+if (!message?.message) return;
+
+// 🔥 LOG EVERYTHING FIRST
 const m = sock.serializeM(message)
 await print(m, sock)
+
+// THEN filter
+if (type !== 'notify') return;
 
 
         await handleAutoread(sock, message);
