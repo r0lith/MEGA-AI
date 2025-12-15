@@ -39,6 +39,7 @@ const { autotypingCommand, isAutotypingEnabled, handleAutotypingForMessage, hand
 const { autoreadCommand, isAutoreadEnabled, handleAutoread } = require('./plugins/autoread');
 
 // Command imports
+import print from './lib/print.js'
 const tagAllCommand = require('./plugins/tagall');
 const helpCommand = require('./plugins/help');
 const banCommand = require('./plugins/ban');
@@ -182,6 +183,7 @@ async function handleMessages(sock, messageUpdate, printLog) {
 
         const message = messages[0];
         if (!message?.message) return;
+await print(message, sock)
 
         await handleAutoread(sock, message);
 
