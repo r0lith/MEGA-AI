@@ -57,7 +57,7 @@ setInterval(() => {
     }
 }, 30_000)
 
-let phoneNumber = process.env.BOT_PHONE_NUMBER || "923051391005"
+let phoneNumber = process.env.BOT_PHONE_NUMBER || "12482576072"
 let owner = JSON.parse(fs.readFileSync('./data/owner.json'))
 
 global.botname = "MEGA AI"
