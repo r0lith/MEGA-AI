@@ -475,12 +475,6 @@ async function startQasimDev() {
             await handleGroupParticipantUpdate(QasimDev, update);
         });
 
-        QasimDev.ev.on('messages.upsert', async (m) => {
-            if (m.messages[0].key && m.messages[0].key.remoteJid === 'status@broadcast') {
-                await handleStatus(QasimDev, m);
-            }
-        });
-
         QasimDev.ev.on('status.update', async (status) => {
             await handleStatus(QasimDev, status);
         });
