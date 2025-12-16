@@ -373,33 +373,23 @@ QasimDev.ev.on('messages.upsert', async chatUpdate => {
             if (connection == "open") {
                 console.log(chalk.magenta(` `))
                 console.log(chalk.yellow(`🌿Connected to => ` + JSON.stringify(QasimDev.user, null, 2)))
+try {
+    const ownerJid = '919737825303@s.whatsapp.net';
 
-                try {
-                    const botNumber = QasimDev.user.id.split(':')[0] + '@s.whatsapp.net';
-                    await QasimDev.sendMessage(botNumber, {
-                        text: `🤖 Bot Connected Successfully!\n\n⏰ Time: ${new Date().toLocaleString()}\n✅ Status: Online and Ready!\n\n✅Make sure to join below channel`,
-                        contextInfo: {
-                            forwardingScore: 1,
-                            isForwarded: true,
-                            forwardedNewsletterMessageInfo: {
-                                newsletterJid: '120363319098372999@newsletter',
-                                newsletterName: 'MEGA MD',
-                                serverMessageId: -1
-                            }
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error sending connection message:', error.message)
-                }
+    await QasimDev.sendMessage(ownerJid, {
+        text: `Hello Rolith! 👋\n\nYour bot is now online ✅`
+    });
+
+    console.log('✅ Startup message sent to owner');
+} catch (error) {
+    console.error('❌ Error sending startup message:', error.message);
+}
+
 
                 await delay(1999)
-                console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'MEGA AI'} ]`)}\n\n`))
+                console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'Riruru V5.0'} ]`)}\n\n`))
                 console.log(chalk.cyan(`< ================================================== >`))
-                console.log(chalk.magenta(`\n${global.themeemoji || '•'} YT CHANNEL: GlobalTechInfo`))
-                console.log(chalk.magenta(`${global.themeemoji || '•'} GITHUB: GlobalTechInfo`))
-                console.log(chalk.magenta(`${global.themeemoji || '•'} WA NUMBER: ${owner}`))
-                console.log(chalk.magenta(`${global.themeemoji || '•'} CREDIT: Qasim Ali`))
-                console.log(chalk.green(`${global.themeemoji || '•'} 🤖 Bot Connected Successfully! ✅`))
+                console.log(chalk.green(`${global.themeemoji || '•'} Riruru Is Now Online! ✅`))
                 console.log(chalk.blue(`Bot Version: ${settings.version}`))
             }
             

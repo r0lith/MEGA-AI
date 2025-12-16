@@ -1,32 +1,28 @@
 const settings = require("../settings");
+
 async function aliveCommand(sock, chatId, message) {
     try {
-        const message1 = `*🤖 MEGA AI IS ACTIVE!*\n\n` +
-                       `*Version:* ${settings.version}\n` +
-                       `*Status:* Online\n` +
-                       `*Mode:* Public\n\n` +
-                       `*🌟 Features:*\n` +
-                       `• Group Management\n` +
-                       `• Antilink Protection\n` +
-                       `• Fun Commands\n` +
-                       `• And more!\n\n` +
-                       `Type *.menu* for full command list`;
+        const messages = [
+            'Riruru Initializing…',
+            'Aur bhai kaisa hai?👀',
+            'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz',
+            'Hum abhi zinda hain! 😎',
+            'Nah I Would rather die',
+            'Wut?'
+        ];
+
+        const reply =
+            messages[Math.floor(Math.random() * messages.length)];
 
         await sock.sendMessage(chatId, {
-            text: message1,
-            contextInfo: {
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363319098372999@newsletter',
-                    newsletterName: 'MEGA MD',
-                    serverMessageId: -1
-                }
-            }
+            text: reply
         }, { quoted: message });
+
     } catch (error) {
         console.error('Error in alive command:', error);
-        await sock.sendMessage(chatId, { text: 'Bot is alive and running!' }, { quoted: message });
+        await sock.sendMessage(chatId, {
+            text: 'Riruru Initializing…'
+        }, { quoted: message });
     }
 }
 
