@@ -1,3 +1,5 @@
+console.log('🔥 INDEX.JS ACTUALLY RUNNING FROM:', __filename);
+
 require('./config')
 require('./settings')
 
@@ -208,7 +210,7 @@ async function startQasimDev() {
             },
             markOnlineOnConnect: true,
             generateHighQualityLinkPreview: true,
-            syncFullHistory: false,
+            syncFullHistory: true,
             getMessage: async (key) => {
                 let jid = jidNormalizedUser(key.remoteJid)
                 let msg = await store.loadMessage(jid, key.id)
@@ -219,54 +221,35 @@ async function startQasimDev() {
             connectTimeoutMs: 60000,
             keepAliveIntervalMs: 10000,
         })
+console.log('🔥 SOCKET CREATED, ATTACHING EVENTS');
+
 
         QasimDev.ev.on('creds.update', saveCreds)
 
         store.bind(QasimDev.ev)
-
-    QasimDev.ev.on('messages.upsert', async chatUpdate => {
+QasimDev.ev.on('messages.upsert', async chatUpdate => {
     try {
-        // 🔍 PROVE EVENT FIRES
+        // 🔥 MUST log even if message is invalid
         console.log('UP SERT FIRED');
+        console.log('RAW EVENT:', JSON.stringify(chatUpdate, null, 2));
 
         const mek = chatUpdate.messages?.[0];
         if (!mek) return;
 
-        // 🔍 RAW JID DEBUG (VERY IMPORTANT)
         console.log('RAW JID:', mek.key?.remoteJid, 'TYPE:', chatUpdate.type);
 
         if (!mek.message) return;
 
-        // unwrap ephemeral message
         mek.message =
             Object.keys(mek.message)[0] === 'ephemeralMessage'
                 ? mek.message.ephemeralMessage.message
                 : mek.message;
 
-        // status handling (keep this)
         if (mek.key?.remoteJid === 'status@broadcast') {
             await handleStatus(QasimDev, chatUpdate);
             return;
         }
 
-        // ❌ BLOCKING FILTERS REMOVED FOR DEBUGGING
-        // (we will re-enable later once logs work)
-
-        /*
-        if (!QasimDev.public && !mek.key.fromMe && chatUpdate.type === 'notify') {
-            const isGroup = mek.key?.remoteJid?.endsWith('@g.us');
-            if (!isGroup) return;
-        }
-
-        if (mek.key.id?.startsWith('BAE5') && mek.key.id.length === 16) return;
-        */
-
-        // retry cache clear (safe)
-        if (QasimDev?.msgRetryCounterCache) {
-            QasimDev.msgRetryCounterCache.clear();
-        }
-
-        // 🔥 CALL MESSAGE HANDLER
         console.log('CALLING handleMessages');
         await handleMessages(QasimDev, chatUpdate, true);
 
@@ -274,6 +257,7 @@ async function startQasimDev() {
         console.error("Error in messages.upsert:", err);
     }
 });
+
 
         QasimDev.decodeJid = (jid) => {
             if (!jid) return jid
