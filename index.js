@@ -228,35 +228,33 @@ console.log('🔥 SOCKET CREATED, ATTACHING EVENTS');
 
         store.bind(QasimDev.ev)
 QasimDev.ev.on('messages.upsert', async chatUpdate => {
+    console.log('✅ messages.upsert FIRED');
+
+    const mek = chatUpdate.messages?.[0];
+
+    console.log('📩 RAW UPDATE:', JSON.stringify(chatUpdate, null, 2));
+
+    if (!mek) {
+        console.log('❌ NO MESSAGE OBJECT');
+        return;
+    }
+
+    console.log(
+        '📌 JID:',
+        mek.key?.remoteJid,
+        'FROM_ME:',
+        mek.key?.fromMe,
+        'TYPE:',
+        chatUpdate.type
+    );
+
     try {
-        // 🔥 MUST log even if message is invalid
-        console.log('UP SERT FIRED');
-        console.log('RAW EVENT:', JSON.stringify(chatUpdate, null, 2));
-
-        const mek = chatUpdate.messages?.[0];
-        if (!mek) return;
-
-        console.log('RAW JID:', mek.key?.remoteJid, 'TYPE:', chatUpdate.type);
-
-        if (!mek.message) return;
-
-        mek.message =
-            Object.keys(mek.message)[0] === 'ephemeralMessage'
-                ? mek.message.ephemeralMessage.message
-                : mek.message;
-
-        if (mek.key?.remoteJid === 'status@broadcast') {
-            await handleStatus(QasimDev, chatUpdate);
-            return;
-        }
-
-        console.log('CALLING handleMessages');
         await handleMessages(QasimDev, chatUpdate, true);
-
-    } catch (err) {
-        console.error("Error in messages.upsert:", err);
+    } catch (e) {
+        console.error('❌ handleMessages crashed:', e);
     }
 });
+
 
 
         QasimDev.decodeJid = (jid) => {
