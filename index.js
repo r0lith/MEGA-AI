@@ -224,48 +224,56 @@ async function startQasimDev() {
 
         store.bind(QasimDev.ev)
 
-        QasimDev.ev.on('messages.upsert', async chatUpdate => {
-            try {
-                const mek = chatUpdate.messages[0]
-                if (!mek.message) return
-                mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
-                if (mek.key && mek.key.remoteJid === 'status@broadcast') {
-                    await handleStatus(QasimDev, chatUpdate);
-                    return;
-                }
-                if (!QasimDev.public && !mek.key.fromMe && chatUpdate.type === 'notify') {
-                    const isGroup = mek.key?.remoteJid?.endsWith('@g.us')
-                    if (!isGroup) return
-                }
-                if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return
+    QasimDev.ev.on('messages.upsert', async chatUpdate => {
+    try {
+        // 🔍 PROVE EVENT FIRES
+        console.log('UP SERT FIRED');
 
-                if (QasimDev?.msgRetryCounterCache) {
-                    QasimDev.msgRetryCounterCache.clear()
-                }
+        const mek = chatUpdate.messages?.[0];
+        if (!mek) return;
 
-                try {
-                    await handleMessages(QasimDev, chatUpdate, true)
-                } catch (err) {
-                    console.error("Error in handleMessages:", err)
-                    if (mek.key && mek.key.remoteJid) {
-                        await QasimDev.sendMessage(mek.key.remoteJid, {
-                            text: '❌ An error occurred while processing your message.',
-                            contextInfo: {
-                                forwardingScore: 1,
-                                isForwarded: true,
-                                forwardedNewsletterMessageInfo: {
-                                    newsletterJid: '120363319098372999@newsletter',
-                                    newsletterName: 'MEGA MD',
-                                    serverMessageId: -1
-                                }
-                            }
-                        }).catch(console.error);
-                    }
-                }
-            } catch (err) {
-                console.error("Error in messages.upsert:", err)
-            }
-        })
+        // 🔍 RAW JID DEBUG (VERY IMPORTANT)
+        console.log('RAW JID:', mek.key?.remoteJid, 'TYPE:', chatUpdate.type);
+
+        if (!mek.message) return;
+
+        // unwrap ephemeral message
+        mek.message =
+            Object.keys(mek.message)[0] === 'ephemeralMessage'
+                ? mek.message.ephemeralMessage.message
+                : mek.message;
+
+        // status handling (keep this)
+        if (mek.key?.remoteJid === 'status@broadcast') {
+            await handleStatus(QasimDev, chatUpdate);
+            return;
+        }
+
+        // ❌ BLOCKING FILTERS REMOVED FOR DEBUGGING
+        // (we will re-enable later once logs work)
+
+        /*
+        if (!QasimDev.public && !mek.key.fromMe && chatUpdate.type === 'notify') {
+            const isGroup = mek.key?.remoteJid?.endsWith('@g.us');
+            if (!isGroup) return;
+        }
+
+        if (mek.key.id?.startsWith('BAE5') && mek.key.id.length === 16) return;
+        */
+
+        // retry cache clear (safe)
+        if (QasimDev?.msgRetryCounterCache) {
+            QasimDev.msgRetryCounterCache.clear();
+        }
+
+        // 🔥 CALL MESSAGE HANDLER
+        console.log('CALLING handleMessages');
+        await handleMessages(QasimDev, chatUpdate, true);
+
+    } catch (err) {
+        console.error("Error in messages.upsert:", err);
+    }
+});
 
         QasimDev.decodeJid = (jid) => {
             if (!jid) return jid
