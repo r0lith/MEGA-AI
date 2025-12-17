@@ -144,7 +144,7 @@ handler.tags = ['group'];
 handler.command = /^(mute|unmute)$/i;
 handler.group = true;
 
-export default handler;
+module.exports = handler;
 
 // --- Helper Function ---
 function parseDuration(duration) {
