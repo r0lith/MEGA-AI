@@ -1,5 +1,6 @@
 // --- Imports ---
-import { rejectIfNotAdmin } from '../lib/adminCheck.js' // adjust path if needed
+const { rejectIfNotAdmin } = require('../lib/adminCheck')
+
 
 let mutedUsers = {};
 if (!global.groupMetaCache) global.groupMetaCache = {};
