@@ -8,7 +8,7 @@ async function handleAntitagCommand(sock, chatId, userMessage, senderId, isSende
             return;
         }
 
-        const prefix = '.';
+        const prefix = '!';
         const args = userMessage.slice(9).toLowerCase().trim().split(' ');
         const action = args[0];
 
