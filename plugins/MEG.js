@@ -20,7 +20,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 
             header: proto.Message.InteractiveMessage.Header.create({
               ...(await prepareWAMessageMedia(
-                { image: { url: './assets/A.png' } },
+                { image: { url: '../assets/bot_image.jp' } },
                 { upload: conn.waUploadToServer }
               )),
               hasMediaAttachment: true

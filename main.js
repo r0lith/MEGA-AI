@@ -43,6 +43,7 @@ const print = require('./lib/print')
 const tagAllCommand = require('./plugins/tagall');
 const helpCommand = require('./plugins/help');
 const banCommand = require('./plugins/ban');
+const megCommand = require('./plugins/MEG');
 const { promoteCommand } = require('./plugins/promote');
 const { demoteCommand } = require('./plugins/demote');
 const muteCommand = require('./plugins/mute');
@@ -184,14 +185,24 @@ async function handleMessages(sock, messageUpdate, printLog) {
     
 
     const message = messages[0];
-    if (!message?.message) return;
+if (!message?.message) return;
 
-// 🔥 LOG EVERYTHING FIRST
-const m = sock.serializeM(message)
-await print(m, sock)
+// 🚫 IGNORE protocol/system messages FIRST
+if (
+  message.message.protocolMessage ||
+  message.message.historySyncNotification ||
+  message.message.appStateSyncKeyShare
+) {
+  return;
+}
 
-// THEN filter
+// 🚫 Only process real notify messages
 if (type !== 'notify') return;
+
+// 🟢 NOW it is safe to serialize/log
+const m = sock.serializeM(message);
+await print(m, sock);
+
 
 
         await handleAutoread(sock, message);
@@ -233,6 +244,7 @@ if (type !== 'notify') return;
         }
 
         const userMessage = (
+            
             message.message?.conversation?.trim() ||
             message.message?.extendedTextMessage?.text?.trim() ||
             message.message?.imageMessage?.caption?.trim() ||
@@ -240,6 +252,9 @@ if (type !== 'notify') return;
             message.message?.buttonsResponseMessage?.selectedButtonId?.trim() ||
             ''
         ).toLowerCase().replace(/\.\s+/g, '.').trim();
+        // 🚫 Ignore empty / non-text messages
+if (!userMessage) return;
+
       
           const command = userMessage.startsWith('.')
          ? userMessage.slice(1).split(' ')[0].toLowerCase(): '';
@@ -417,6 +432,18 @@ if (type !== 'notify') return;
                 await helpCommand(sock, chatId, message, global.channelLink);
                 commandExecuted = true;
                 break;
+          case userMessage === '.meg': {
+    const m = sock.serializeM(message);
+
+    // 🔧 REQUIRED context for handler-style plugins
+    m.chat = chatId;
+    m.key = message.key; // ⭐ THIS WAS MISSING
+
+    await megCommand(m, { conn: sock, usedPrefix: '.' });
+
+    commandExecuted = true;
+    break;
+}
             case userMessage === '.sticker' || userMessage === '.s':
                 await stickerCommand(sock, chatId, message);
                 commandExecuted = true;
