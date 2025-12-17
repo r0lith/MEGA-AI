@@ -1,5 +1,4 @@
-import pkg from 'baileys';
-
+const pkg = require('baileys');
 const { proto, generateWAMessageFromContent, prepareWAMessageMedia } = pkg;
 
 let handler = async (m, { conn, text, mentionedJid, usedPrefix }) => {
@@ -82,4 +81,4 @@ handler.command = ['welcome'];
 handler.group = true;
 handler.admin = false; // optionally restrict to admin only
 
-export default handler;
+module.exports = handler;

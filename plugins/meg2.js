@@ -73,4 +73,4 @@ handler.command = [
 handler.help = handler.command;
 handler.tags = ['main'];
 
-export default handler;
+module.exports = handler;
