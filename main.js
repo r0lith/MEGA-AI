@@ -178,6 +178,7 @@ const channelInfo = {
 };
 
 async function handleMessages(sock, messageUpdate, printLog) {
+    let chatId;
     try {
  console.log('HANDLEMESSAGES ENTRY'); // 👈 ADD THIS LINE
 
@@ -216,7 +217,8 @@ await print(m, sock);
             return;
         }
 
-        const chatId = message.key.remoteJid;
+        chatId = message.key.remoteJid;
+
         const senderId = message.key.participant || message.key.remoteJid;
         const isGroup = chatId.endsWith('@g.us');
         const senderIsSudo = await isSudo(senderId);
@@ -1361,10 +1363,10 @@ if (!userMessage) return;
             await addCommandReaction(sock, message);
         }
     } catch (error) {
-        console.error('Error in message handler:', error.message);
-        if (chatId) {
-            await sock.sendMessage(chatId, {
-                text: 'Failed to process command!',
+    console.error('Error in message handler:', error.message);
+    if (chatId) {
+        await sock.sendMessage(chatId, {
+            text: 'Failed to process command!',
                 ...channelInfo
             });
         }
