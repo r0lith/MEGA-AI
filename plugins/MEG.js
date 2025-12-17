@@ -1,6 +1,7 @@
 const { proto, prepareWAMessageMedia, generateWAMessageFromContent } = require('baileys');
 
 let handler = async (m, { conn, usedPrefix }) => {
+  console.log('[MEG HANDLER FIRED]', m.text);
   const text =
     `Hello student! 🙋‍♂️\n` +
     `You can check the options below to access Assignments, Books, Datesheet, Exam Forms, and more to help you with your studies.`;
@@ -114,6 +115,6 @@ let handler = async (m, { conn, usedPrefix }) => {
 
 handler.help = ['meg'];
 handler.tags = ['main'];
-handler.command = ['meg', 'MEG', 'Meg'];
+handler.command = /^meg$/i;
 
 module.exports = handler;
