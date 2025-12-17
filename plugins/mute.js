@@ -1,144 +1,168 @@
 // --- Imports ---
-const { rejectIfNotAdmin } = require('../lib/adminCheck')
+const isAdmin = require('./lib/isAdmin');
 
-
+// --- In-memory mute store ---
 let mutedUsers = {};
 if (!global.groupMetaCache) global.groupMetaCache = {};
 
 // --- Command Handler ---
 let handler = async (m, { conn, args, command }) => {
   try {
-    // ✅ Step 1: Ensure sender is admin
-    const allowed = await rejectIfNotAdmin(conn, m);
-    if (!allowed) return; // stops execution if not admin
-
-    // ✅ Step 2: Ensure bot is admin too (for delete rights)
-    const botJidRaw = conn.user.id;
-    const botJid = botJidRaw.split(':')[0] + '@s.whatsapp.net';
-
-    // --- metadata cache (to avoid rate-overlimit) ---
-    const cacheEntry = global.groupMetaCache[m.chat];
-    let metadata;
-
-    if (cacheEntry && Date.now() - cacheEntry.timestamp < 60000) {
-      metadata = cacheEntry.data;
-    } else {
-      metadata = await conn.groupMetadata(m.chat);
-      global.groupMetaCache[m.chat] = { data: metadata, timestamp: Date.now() };
+    // ❗ Group only
+    if (!m.isGroup) {
+      return conn.sendMessage(
+        m.chat,
+        { text: '❌ This command works only in groups.' },
+        { quoted: m }
+      );
     }
 
+    // ✅ Admin checks (sender + bot)
+    const adminCheck = await isAdmin(conn, m);
 
+    let senderIsAdmin = false;
+    let botIsAdmin = false;
 
-
-    // ✅ Try to find bot info more reliably
-    let botInfo = metadata.participants.find(
-      p =>
-        p.id === botJid ||
-        p.jid === botJid ||
-        p.lid === botJid ||
-        (p.lid && botJid?.includes(p.lid.split('@')[0]))
-    );
-
-    // If still not found, fallback to any participant that looks like a bot (isAdmin:true)
-    if (!botInfo) {
-      botInfo = metadata.participants.find(p => p.isAdmin && p.lid);
-      console.warn('[Mute] Bot participant not found directly — using fallback:', botInfo);
+    if (typeof adminCheck === 'boolean') {
+      senderIsAdmin = adminCheck;
+      botIsAdmin = adminCheck;
+    } else if (typeof adminCheck === 'object') {
+      senderIsAdmin = adminCheck.senderAdmin;
+      botIsAdmin = adminCheck.botAdmin;
     }
 
-    const botIsAdmin =
-      botInfo?.admin === 'admin' ||
-      botInfo?.admin === 'superadmin' ||
-      botInfo?.isAdmin === true ||
-      botInfo?.role === 'admin';
-
-    console.log('[Mute] Bot admin check:', { botJid, found: !!botInfo, botIsAdmin });
+    if (!senderIsAdmin) {
+      return conn.sendMessage(
+        m.chat,
+        { text: '❌ Only group admins can use this command.' },
+        { quoted: m }
+      );
+    }
 
     if (!botIsAdmin) {
       return conn.sendMessage(
         m.chat,
-        { text: '✳️ I need to be an admin to mute users (to delete their messages).' },
+        { text: '❌ I need admin rights to mute users (delete messages).' },
         { quoted: m }
       );
     }
 
-    // --- Original Mute Logic ---
-    if (!m.quoted) throw '✳️ Please reply to a message to mute the user.';
+    // ❗ Must reply to a message
+    if (!m.quoted) {
+      return conn.sendMessage(
+        m.chat,
+        { text: '✳️ Reply to a user’s message to mute/unmute them.' },
+        { quoted: m }
+      );
+    }
 
-    // Safely resolve target user JID/LID
-    let userToMute =
-      m.quoted.key?.participant ||
-      m.message?.extendedTextMessage?.contextInfo?.participant ||
-      m.quoted.sender;
+    // --- Resolve target user ---
+    const userToMute =
+      m.quoted?.sender ||
+      m.quoted?.key?.participant ||
+      m.message?.extendedTextMessage?.contextInfo?.participant;
 
     if (!userToMute) {
       return conn.sendMessage(
         m.chat,
-        { text: 'Could not identify the user to mute. Please reply to a valid message.' },
+        { text: '❌ Could not identify the user.' },
         { quoted: m }
       );
     }
 
-    // Protect owner
+    // ❗ Protect owner (edit number if needed)
     if (userToMute.startsWith('919737825303')) {
-      return conn.sendMessage(m.chat, { text: "He's my owner, you idiot." }, { quoted: m });
+      return conn.sendMessage(
+        m.chat,
+        { text: '🚫 You cannot mute the owner.' },
+        { quoted: m }
+      );
     }
 
-    // --- MUTE / UNMUTE Commands ---
+    // --- MUTE ---
     if (command === 'mute') {
       const duration = args[0];
-      if (!duration) throw '✳️ Please specify duration, e.g. !mute 10m';
+      if (!duration) {
+        return conn.sendMessage(
+          m.chat,
+          { text: '✳️ Usage: !mute 10s / 5m / 1h' },
+          { quoted: m }
+        );
+      }
 
       const time = parseDuration(duration);
-      if (!time) throw '✳️ Invalid duration format. Use 10s / 5m / 1h';
+      if (!time) {
+        return conn.sendMessage(
+          m.chat,
+          { text: '❌ Invalid duration format (use s/m/h).' },
+          { quoted: m }
+        );
+      }
 
       mutedUsers[userToMute] = Date.now() + time;
-      console.log(`[Mute] Muting user ${userToMute} for ${duration}`);
 
-      await conn.sendMessage(m.chat, { text: `🔇 User has been muted for ${duration}.` }, { quoted: m });
+      await conn.sendMessage(
+        m.chat,
+        { text: `🔇 User muted for ${duration}.` },
+        { quoted: m }
+      );
 
       setTimeout(() => {
         delete mutedUsers[userToMute];
-        conn.sendMessage(m.chat, { text: `🔊 User has been unmuted.` }, { quoted: m });
+        conn.sendMessage(m.chat, { text: '🔊 User unmuted.' });
       }, time);
+    }
 
-    } else if (command === 'unmute') {
+    // --- UNMUTE ---
+    else if (command === 'unmute') {
       if (mutedUsers[userToMute]) {
         delete mutedUsers[userToMute];
-        await conn.sendMessage(m.chat, { text: '🔊 User has been unmuted.' }, { quoted: m });
+        await conn.sendMessage(
+          m.chat,
+          { text: '🔊 User unmuted.' },
+          { quoted: m }
+        );
       } else {
-        await conn.sendMessage(m.chat, { text: '✳️ User is not muted.' }, { quoted: m });
+        await conn.sendMessage(
+          m.chat,
+          { text: 'ℹ️ User is not muted.' },
+          { quoted: m }
+        );
       }
     }
   } catch (err) {
-    console.error('❌ Error in mute/unmute command:', err);
-    await conn.sendMessage(m.chat, { text: `An error occurred: ${err.message || err}` }, { quoted: m });
+    console.error('[Mute Error]', err);
+    await conn.sendMessage(
+      m.chat,
+      { text: `❌ Error: ${err.message || err}` },
+      { quoted: m }
+    );
   }
 };
 
-// --- Message Interceptor (for deleting muted users’ messages) ---
+// --- Message Interceptor (auto delete muted users) ---
 handler.before = async (m, { conn }) => {
   const userJid = m.sender;
   const userLid = m.participant;
 
-  const isMutedByJid = mutedUsers[userJid] && Date.now() < mutedUsers[userJid];
-  const isMutedByLid = userLid && mutedUsers[userLid] && Date.now() < mutedUsers[userLid];
+  const muted =
+    (mutedUsers[userJid] && Date.now() < mutedUsers[userJid]) ||
+    (userLid && mutedUsers[userLid] && Date.now() < mutedUsers[userLid]);
 
-  if (isMutedByJid || isMutedByLid) {
+  if (muted) {
     try {
-      console.log(`[Mute] Deleting message from muted user: ${userJid || userLid}`);
       await conn.sendMessage(m.chat, { delete: m.key });
       return true;
     } catch (e) {
-      console.error(`[Mute] Failed to delete message: ${e.message}`);
+      console.error('[Mute] Delete failed:', e.message);
       delete mutedUsers[userJid];
       delete mutedUsers[userLid];
-      return false;
     }
   }
   return false;
 };
 
-// --- Command Info ---
+// --- Command Metadata ---
 handler.help = ['mute <duration>', 'unmute'];
 handler.tags = ['group'];
 handler.command = /^(mute|unmute)$/i;
@@ -146,16 +170,17 @@ handler.group = true;
 
 module.exports = handler;
 
-// --- Helper Function ---
-function parseDuration(duration) {
-  const match = duration.match(/^(\d+)(s|m|h)$/);
+// --- Helper ---
+function parseDuration(input) {
+  const match = input.match(/^(\d+)(s|m|h)$/i);
   if (!match) return null;
+
   const value = parseInt(match[1]);
-  const unit = match[2];
-  switch (unit) {
-    case 's': return value * 1000;
-    case 'm': return value * 60 * 1000;
-    case 'h': return value * 60 * 60 * 1000;
-    default: return null;
-  }
+  const unit = match[2].toLowerCase();
+
+  if (unit === 's') return value * 1000;
+  if (unit === 'm') return value * 60 * 1000;
+  if (unit === 'h') return value * 60 * 60 * 1000;
+
+  return null;
 }
