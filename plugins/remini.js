@@ -66,7 +66,7 @@ async function reminiCommand(sock, chatId, message, args) {
                 if (imageResponse.status === 200 && imageResponse.data) {
                     await sock.sendMessage(chatId, {
                         image: imageResponse.data,
-                        caption: '✨ *Image enhanced successfully!*\n\n𝗘𝗡𝗛𝗔𝗡𝗖𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜'
+                        caption: '✨ *Image enhanced successfully!*\n\n𝗘𝗡𝗛𝗔𝗡𝗖𝗘𝗗 𝗕𝗬 Riruru'
                     }, { quoted: message });
                 } else {
                     throw new Error('Failed to download enhanced image');

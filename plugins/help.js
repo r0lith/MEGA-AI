@@ -1,227 +1,225 @@
+const isOwnerOrSudo = require('../lib/isOwner');
 const settings = require('../settings');
 const fs = require('fs');
 const path = require('path');
 
 async function helpCommand(sock, chatId, message) {
-    const helpMessage = `
-╭───〔 🤖 BOT INFO 〕───╮
-│ Name    : Riruru
-│ Version : V5.0
-│ Author  : Rolith
-╰──────────────────────╯
 
-╭───〔 ⚙️ GENERAL 〕───╮
-│ !help
-│ !menu
-│ !ping
-│ !alive
-│ !tts
-│ !owner
-│ !joke
-│ !quote
-│ !fact
-│ !weather
-│ !news
-│ !attp
-│ !lyrics
-│ !8ball
-│ !groupinfo
-│ !staff
-│ !admins
-│ !vv
-│ !trt
-│ !ss
-│ !jid
-│ !url
-│ !teddy
-│ !wiki
-│ !trends
-│ !upload
-│ !notes
-│ !fancytext
-│ !wattpad
-│ !readmore
-│ !walink
-│ !pokedex
-╰──────────────────────╯
+    const senderId = message.key.participant || message.key.remoteJid;
+    const isOwner = await isOwnerOrSudo(senderId, sock, chatId);
 
-╭───〔 🧑‍💻 ADMINS 〕───╮
-│ !ban
-│ !promote
-│ !demote
-│ !mute
-│ !unmute
-│ !delete
-│ !kick
-│ !warnings
-│ !warn
-│ !antilink
-│ !antibadword
-│ !clear
-│ !tag
-│ !tagall
-│ !tagnotadmin
-│ !hidetag
-│ !chatbot
-│ !resetlink
-│ !antitag
-│ !welcome
-│ !goodbye
-│ !setgdesc
-│ !setgname
-│ !setgpp
-╰──────────────────────╯
+    if (!message.key.fromMe && !isOwner) {
+        await sock.sendMessage(chatId, {
+            text: 'This command can be used by owner only'
+        }, { quoted: message });
+        return;
+    }
+   const helpMessage = `
+╔════════════ 🤖 RIRURU BOT ════════════╗
+║ Version : v5.0
+║ Author  : Rolith
+╚══════════════════════════════════════╝
 
-╭───〔 📊 OWNER 〕───╮
-│ !mode
-│ !autochat
-│ !clearsession
-│ !antidelete
-│ !cleartmp
-│ !update
-│ !settings
-│ !setpp
-│ !autoreact
-│ !cmdreact
-│ !autostatus
-│ !autotyping
-│ !autoread
-│ !anticall
-│ !pmblocker
-│ !pmblocker setmsg
-│ !setmention
-│ !mention
-╰──────────────────────╯
+──────────── ⚙️ GENERAL ────────────
+!help
+!menu
+!ping
+!alive
+!tts
+!owner
+!joke
+!quote
+!fact
+!weather
+!news
+!attp
+!lyrics
+!8ball
+!groupinfo
+!staff
+!admins
+!vv
+!trt
+!ss
+!jid
+!url
+!teddy
+!wiki
+!trends
+!upload
+!notes
+!fancytext
+!wattpad
+!readmore
+!walink
+!pokedex
 
-╭───〔 🖼️ IMAGES 〕───╮
-│ !blur
-│ !simage
-│ !sticker
-│ !removebg
-│ !remini
-│ !crop
-│ !tgsticker
-│ !meme
-│ !take
-│ !emojimix
-│ !igs
-│ !igsc
-╰──────────────────────╯
+─────────── 🧑‍💻 ADMINS ───────────
+!ban
+!promote
+!demote
+!mute
+!unmute
+!delete
+!kick
+!warnings
+!warn
+!antilink
+!antibadword
+!clear
+!tag
+!tagall
+!tagnotadmin
+!hidetag
+!chatbot
+!resetlink
+!antitag
+!welcome
+!goodbye
+!setgdesc
+!setgname
+!setgpp
 
-╭───〔 💃 PIES 〕───╮
-│ !pies
-│ !china
-│ !indonesia
-│ !japan
-│ !korea
-│ !hijab
-╰──────────────────────╯
+──────────── 📊 OWNER ─────────────
+!mode
+!autochat
+!clearsession
+!antidelete
+!cleartmp
+!update
+!settings
+!setpp
+!autoreact
+!cmdreact
+!autostatus
+!autotyping
+!autoread
+!anticall
+!pmblocker
+!pmblocker setmsg
+!setmention
+!mention
 
-╭───〔 🎮 GAMES 〕───╮
-│ !tictactoe
-│ !hangman
-│ !guess
-│ !trivia
-│ !answer
-│ !truth
-│ !dare
-╰──────────────────────╯
+──────────── 🖼️ IMAGES ────────────
+!blur
+!simage
+!sticker
+!removebg
+!remini
+!crop
+!tgsticker
+!meme
+!take
+!emojimix
+!igs
+!igsc
 
-╭───〔 🤖 AI 〕───╮
-│ !gpt
-│ !gemini
-│ !imagine
-│ !flux
-│ !sora
-╰──────────────────────╯
+──────────── 💃 PIES ──────────────
+!pies
+!china
+!indonesia
+!japan
+!korea
+!hijab
 
-╭───〔 🎭 FUN 〕───╮
-│ !compliment
-│ !insult
-│ !flirt
-│ !shayari
-│ !goodnight
-│ !roseday
-│ !character
-│ !wasted
-│ !ship
-│ !simp
-│ !stupid
-╰──────────────────────╯
+──────────── 🎮 GAMES ─────────────
+!tictactoe
+!hangman
+!guess
+!trivia
+!answer
+!truth
+!dare
 
-╭───〔 🏞️ MAKERS 〕───╮
-│ !metallic
-│ !ice
-│ !snow
-│ !impressive
-│ !matrix
-│ !light
-│ !neon
-│ !devil
-│ !purple
-│ !thunder
-│ !leaves
-│ !1917
-│ !arena
-│ !hacker
-│ !sand
-│ !blackpink
-│ !glitch
-│ !fire
-╰──────────────────────╯
+──────────── 🤖 AI ────────────────
+!gpt
+!gemini
+!imagine
+!flux
+!sora
 
-╭───〔 ⬇️ DOWNLOADS 〕───╮
-│ !play
-│ !song
-│ !spotify
-│ !instagram
-│ !facebook
-│ !tiktok
-│ !video
-│ !ytmp4
-│ !imdb
-│ !itunes
-│ !shazam
-╰──────────────────────╯
+──────────── 🎭 FUN ───────────────
+!compliment
+!insult
+!flirt
+!shayari
+!goodnight
+!roseday
+!character
+!wasted
+!ship
+!simp
+!stupid
 
-╭───〔 🖌️ CANVAS 〕───╮
-│ !heart
-│ !horny
-│ !circle
-│ !lgbt
-│ !lolice
-│ !its-so-stupid
-│ !namecard
-│ !oogway
-│ !tweet
-│ !ytcomment
-│ !comrade
-│ !gay
-│ !glass
-│ !jail
-│ !passed
-│ !triggered
-╰──────────────────────╯
+──────────── 🏞️ MAKERS ───────────
+!metallic
+!ice
+!snow
+!impressive
+!matrix
+!light
+!neon
+!devil
+!purple
+!thunder
+!leaves
+!1917
+!arena
+!hacker
+!sand
+!blackpink
+!glitch
+!fire
 
-╭───〔 🎊 ANIME 〕───╮
-│ !nom
-│ !poke
-│ !cry
-│ !kiss
-│ !pat
-│ !hug
-│ !wink
-│ !facepalm
-╰──────────────────────╯
+──────────── ⬇️ DOWNLOADS ─────────
+!play
+!song
+!spotify
+!instagram
+!facebook
+!tiktok
+!video
+!ytmp4
+!imdb
+!itunes
+!shazam
 
-╭───〔 🔗 GITHUB 〕───╮
-│ !git
-│ !github
-│ !sc
-│ !script
-│ !repo
-╰──────────────────────╯
+──────────── 🖌️ CANVAS ───────────
+!heart
+!horny
+!circle
+!lgbt
+!lolice
+!its-so-stupid
+!namecard
+!oogway
+!tweet
+!ytcomment
+!comrade
+!gay
+!glass
+!jail
+!passed
+!triggered
+
+──────────── 🎊 ANIME ─────────────
+!nom
+!poke
+!cry
+!kiss
+!pat
+!hug
+!wink
+!facepalm
+
+──────────── 🔗 GITHUB ────────────
+!git
+!github
+!sc
+!script
+!repo
 `;
+
 
     try {
         const imagePath = path.join(__dirname, '../assets/bot_image.jpg');

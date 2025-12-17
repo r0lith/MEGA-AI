@@ -1,0 +1,18 @@
+let handler = async (m, { conn, isOwner }) => {
+    console.log('ralive command triggered'); // Debugging log
+    if (!isOwner) throw `✳️ This command can only be run by the owner.`;
+  
+    let messageContent = {
+      text: 'Hello Master', // Text content
+    };
+  
+    // Send the message
+    await conn.sendMessage(m.chat, messageContent);
+    console.log('Message sent'); // Debugging log
+  };
+  
+  handler.help = ['ralive'];
+  handler.tags = ['main'];
+  handler.command = /^(ralive)$/i;
+  
+  export default handler;

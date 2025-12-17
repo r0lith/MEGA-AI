@@ -10,7 +10,7 @@ const settings = {
   maxStoreMessages: 20, 
   storeWriteInterval: 10000,
   description: "This is a bot for managing group commands and automating tasks.",
-  version: "5.0.0",
+  version: "5.0",
   updateZipUrl: "https://github.com/GlobalTechInfo/MEGA-MD/archive/refs/heads/main.zip",
 };
 

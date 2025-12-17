@@ -142,7 +142,7 @@ async function facebookCommand(sock, chatId, message) {
             }, { quoted: message });
         }
         try {
-            const caption = title ? `𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜\n\n📝 Title: ${title}` : "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜";
+            const caption = title ? `𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗜𝗠𝗘𝗚𝗔 𝗔\n\n📝 Title: ${title}` : "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru";
             
             await sock.sendMessage(chatId, {
                 video: { url: fbvid },
@@ -184,7 +184,7 @@ async function facebookCommand(sock, chatId, message) {
                 if (!fs.existsSync(tempFile) || fs.statSync(tempFile).size === 0) {
                     throw new Error('Failed to download video');
                 }
-                const caption = title ? `𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜\n\n📝 Title: ${title}` : "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜";
+                const caption = title ? `𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru\n\n📝 Title: ${title}` : "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru";
                 
                 await sock.sendMessage(chatId, {
                     video: { url: tempFile },

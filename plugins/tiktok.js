@@ -107,12 +107,12 @@ async function tiktokCommand(sock, chatId, message) {
                                 await sock.sendMessage(chatId, {
                                     video: { url: mediaUrl },
                                     mimetype: "video/mp4",
-                                    caption: "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜"
+                                    caption: "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru"
                                 }, { quoted: message });
                             } else {
                                 await sock.sendMessage(chatId, {
                                     image: { url: mediaUrl },
-                                    caption: "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜"
+                                    caption: "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru"
                                 }, { quoted: message });
                             }
                         }
@@ -158,7 +158,7 @@ async function tiktokCommand(sock, chatId, message) {
                         }
                     }
                     
-                    const caption = title ? `𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜\n\n📝 Title: ${title}` : "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜";
+                    const caption = title ? `𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru\n\n📝 Title: ${title}` : "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru";
                     
                     await sock.sendMessage(chatId, {
                         video: videoBuffer,
@@ -191,7 +191,7 @@ async function tiktokCommand(sock, chatId, message) {
                 } catch (downloadError) {
                     console.error(`Failed to download video: ${downloadError.message}`);
                     try {
-                        const caption = title ? `𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜\n\n📝 Title: ${title}` : "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 𝗠𝗘𝗚𝗔 𝗔𝗜";
+                        const caption = title ? `𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru\n\n📝 Title: ${title}` : "𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗗 𝗕𝗬 Riruru";
                         
                         await sock.sendMessage(chatId, {
                             video: { url: videoUrl },

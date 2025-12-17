@@ -161,16 +161,16 @@ const soraCommand = require('./plugins/sora');
 
 global.packname = settings.packname;
 global.author = settings.author;
-global.channelLink = "https://whatsapp.com/channel/0029VagJIAr3bbVBCpEkAM07";
-global.ytch = "GlobalTechInfo";
+global.channelLink = "";
+global.ytch = "";
 
 const channelInfo = {
     contextInfo: {
         forwardingScore: 1,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-            newsletterJid: '120363319098372999@newsletter',
-            newsletterName: 'MEGA MD',
+            newsletterJid: '',
+            newsletterName: 'Riruru The Bot',
             serverMessageId: -1
         }
     }
