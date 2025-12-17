@@ -1,5 +1,5 @@
 // --- Imports ---
-const isAdmin = require('./lib/isAdmin');
+const isAdmin = require('../lib/isAdmin');
 
 // --- In-memory mute store ---
 let mutedUsers = {};
