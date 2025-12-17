@@ -1,4 +1,4 @@
-const { proto, prepareWAMessageMedia, generateWAMessageFromContent } = require('baileys');
+const { proto, prepareWAMessageMedia, generateWAMessageFromContent } = require('@whiskeysockets/baileys');
 
 let handler = async (m, { conn, usedPrefix }) => {
   console.log('[MEG HANDLER FIRED]', m.text);
